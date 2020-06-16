@@ -1,0 +1,950 @@
+---
+title: "Neural Network"
+author: "Chaitali Sawant,Harshita Gadiraju and Shivani Agarwal"
+date: "2/19/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Question 1
+#before epoch1,Forward Propogation input x2 - data and weights
+```{r}
+
+x1 <- 0
+x2 <- 1
+h0 <- 1
+h1x0 <- -.4
+h1x1 <- .2
+h1x2 <- .1
+h2x0 <- -.2 
+h2x1 <- .4
+h2x2 <- -.1
+
+x0 <- 1
+
+o1h0 <- .1
+o1h1 <- -.2
+o1h2 <- .1
+o2h0 <- .4
+o2h1 <- -.1
+o2h2 <- .1
+
+t1 <- .1
+t2 <- .9
+n <- .1
+a <- .9
+```
+
+##Hidden and output
+```{r}
+h1_f <- sum((x0*h1x0)+(x1*h1x1)+(x2*h1x2))
+h1<- 1/(1+exp(-h1_f))
+h1
+
+h2_f <- sum((x0*h2x0)+(x1*h2x1)+(x2*h2x2))
+h2<- 1/(1+exp(-h2_f))
+h2
+
+o1_f <- sum((x0*o1h0)+(h1*o1h1)+(h2*o1h2))
+o1 <- 1/(1+exp(-o1_f))
+o1
+
+o2_f <- sum((x0*o2h0)+(h1*o2h1)+(h2*o2h2))
+o2 <- 1/(1+exp(-o2_f))
+o2
+```
+
+##Error Terms
+```{r}
+eo1 <-.5*(t1-o1)^2
+eo2 <-.5*(t2-o2)^2
+eo1
+eo2
+```
+
+##Question 2
+##backward propogation starts from output layer to hidden layer
+```{r}
+#sigmoid output weights
+so1 <- o1*(1-o1)*(t1-o1)
+so2 <- o2*(1-o2)*(t2-o2)
+
+#new output weights
+dw0 <- (n*so1*h0)+(a*0) #Delta weight for output 1
+o1h0 <- o1h0+dw0
+
+dw1 <- (n*so1*h1)+(a*0)
+o1h1 <- o1h1+dw1
+
+dw2 <- (n*so1*h2)+(a*0)
+o1h2 <- o1h2+dw2
+
+dw0 <- (n*so2*h0)+(a)*0
+o2h0 <- o2h0+dw0
+
+dw1 <- (n*so2*h1)+(a)*0
+o2h1 <- o2h1+dw1
+
+dw2 <- (n*so2*h2)+(a)*0
+o2h2 <- o2h2+dw2
+
+o1h0
+o1h1
+o1h2
+o2h0
+o2h1
+o2h2
+```
+
+```{r}
+##Presenting the data in a better way/form to understand it better using data.frame and putting the data into a new dataset  
+bp_weightsoh <- as.data.frame(c(o1h0, o1h1, o1h2,o2h0,o2h1,o2h2))
+colnames(bp_weightsoh) <- "o/p-h/n weights"
+bp_weightsoh
+```
+
+##backward propogation from hidden layer to input layer
+```{r}
+##delta h node weights 
+dh1 <- h1*(1-h1)*((so1*o1h1)+(so2*o2h1))
+dh2 <- h2*(1-h2)*((so1*o1h2)+(so2*o2h2))
+
+#new h node weights
+dw0 <- (n*dh1*x0)+(a*0)
+h1x0 <- h1x0+dw0
+dw1 <- (n*dh1*x1)+(a*0)
+h1x1 <- h1x1+dw0
+dw2 <- (n*dh1*x2)+(a*0)
+h1x2 <- h1x2+dw0
+
+dw0 <- (n*dh1*x0)+(a*0)
+h2x0 <- h2x0+dw0
+dw1 <- (n*dh1*x1)+(a*0)
+h2x1 <- h2x1+dw0
+dw2 <- (n*dh1*x2)+(a*0)
+h2x2 <- h2x2+dw0
+
+h1x0
+h1x1
+h1x2
+h2x0
+h2x1
+h2x2
+```
+
+```{r}
+bp_weightshi <- as.data.frame(c(h1x0,h1x1,h1x2,h2x0,h2x1,h2x2))
+colnames(bp_weightshi) <- "h/n-i/p weights"
+bp_weightshi
+```
+
+
+##Question3 
+#before epoch1,input 1 - data and weights (Forward Propogation)
+```{r}
+x1 <- 1
+x2 <- 0
+h1x0 <- -.4
+h1x1 <- .2
+h1x2 <- .1
+h2x0 <- -.2 
+h2x1 <- .4
+h2x2 <- -.1
+
+o1h0 <- .1
+o1h1 <- -.2
+o1h2 <- .1
+o2h0 <- .4
+o2h1 <- -.1
+o2h2 <- .1
+
+t1 <- .9
+t2 <- .1
+n <- .1
+a <- .9
+```
+
+##Hidden and output
+```{r}
+h1_in <- sum((x1*h1x1)+(x2*h1x2)+(1*h1x0))
+h1<- 1/(1+exp(-h1_in))
+h1
+
+h2_in <- sum((x1*h2x1)+(x2*h2x2)+(1*h2x0))
+h2<- 1/(1+exp(-h2_in))
+h2
+
+o1_in <- sum((h1*o1h1)+(h2*o1h2)+(1*o1h0))
+o1 <- 1/(1+exp(-o1_in))
+o1
+
+o2_in <- sum((h1*o2h1)+(h2*o2h2)+(1*o2h0))
+o2 <- 1/(1+exp(-o2_in))
+o2
+```
+
+##error term
+```{r}
+eo1 <-.5*(t1-o1)^2
+eo2 <-.5*(t2-o2)^2
+eo1
+eo2
+```
+
+##backward propogation
+```{r}
+#delta output weights
+so1 <- o1*(1-o1)*(t1-o1)
+so2 <- o2*(1-o2)*(t2-o2)
+so1
+so2
+
+#new output weights
+dw0 <- (n*so1*1)+(a*0)
+o1h0 <- o1h0+dw0
+
+dw1 <- (n*so1*h1)+(a*0)
+o1h1 <- o1h1+dw1
+
+dw2 <- (n*so1*h2)+(a*0)
+o1h2 <- o1h2+dw2
+
+
+dw0 <- (n*so2*1)+(a)*0
+o2h0 <- o2h0+dw0
+
+dw1 <- (n*so2*h1)+(a)*0
+o2h1 <- o2h1+dw1
+
+dw2 <- (n*so2*h2)+(a)*0
+o2h2 <- o2h2+dw2
+
+o1h0
+o1h1
+o1h2
+o2h0
+o2h1
+o2h2
+```
+
+```{r}
+bp_input1_woh <- as.data.frame(c(o1h0, o1h1, o1h2,o2h0,o2h1,o2h2))
+colnames(bp_input1_woh) <- "oh before epoch input 1 weights"
+bp_input1_woh
+```
+
+```{r}
+##delta h node weights   
+dh1 <- h1*(1-h1)*((so1*o1h1)+(so2*o2h1))
+dh2 <- h2*(1-h2)*((so1*o1h2)+(so2*o2h2))
+
+#new h node weights
+dw0 <- (n*dh1*1)+(a*0)
+h1x0 <- h1x0+dw0
+dw1 <- (n*dh1*x1)+(a*0)
+h1x1 <- h1x1+dw0
+dw2 <- (n*dh1*x2)+(a*0)
+h1x2 <- h1x2+dw0
+
+dw0 <- (n*dh1*1)+(a*0)
+h2x0 <- h2x0+dw0
+dw1 <- (n*dh1*x1)+(a*0)
+h2x1 <- h2x1+dw0
+dw2 <- (n*dh1*x2)+(a*0)
+h2x2 <- h2x2+dw0
+
+h1x0
+h1x1
+h1x2
+h2x0
+h2x1
+h2x2
+```
+
+```{r}
+bp_input1_whx <- as.data.frame(c(h1x0,h1x1,h1x2,h2x0,h2x1,h2x2))
+colnames(bp_input1_whx) <- "hx before epoch input 1 weights"
+bp_input1_whx
+```
+
+#before epoch1,input 2 - data and weights
+```{r}
+x1 <- 0
+x2 <- 1
+h1x0 <- -.4
+h1x1 <- .2
+h1x2 <- .1
+h2x0 <- -.2 
+h2x1 <- .4
+h2x2 <- -.1
+
+o1h0 <- .1
+o1h1 <- -.2
+o1h2 <- .1
+o2h0 <- .4
+o2h1 <- -.1
+o2h2 <- .1
+
+t1 <- .1
+t2 <- .9
+n <- .1
+a <- .9
+```
+
+##Hidden and output
+```{r}
+h1_in <- sum((x1*h1x1)+(x2*h1x2)+(1*h1x0))
+h1<- 1/(1+exp(-h1_in))
+h1
+
+h2_in <- sum((x1*h2x1)+(x2*h2x2)+(1*h2x0))
+h2<- 1/(1+exp(-h2_in))
+h2
+
+o1_in <- sum((h1*o1h1)+(h2*o1h2)+(1*o1h0))
+o1 <- 1/(1+exp(-o1_in))
+o1
+
+o2_in <- sum((h1*o2h1)+(h2*o2h2)+(1*o2h0))
+o2 <- 1/(1+exp(-o2_in))
+o2
+```
+
+##error term
+```{r}
+eo1 <-.5*(t1-o1)^2
+eo2 <-.5*(t2-o2)^2
+eo1
+eo2
+```
+
+##backward propogation
+```{r}
+#delta output weights
+so1 <- o1*(1-o1)*(t1-o1)
+so2 <- o2*(1-o2)*(t2-o2)
+so1
+so2
+
+#new output weights
+dw0 <- (n*so1*1)+(a*0)
+o1h0 <- o1h0+dw0
+
+dw1 <- (n*so1*h1)+(a*0)
+o1h1 <- o1h1+dw1
+
+dw2 <- (n*so1*h2)+(a*0)
+o1h2 <- o1h2+dw2
+
+
+dw0 <- (n*so2*1)+(a)*0
+o2h0 <- o2h0+dw0
+
+dw1 <- (n*so2*h1)+(a)*0
+o2h1 <- o2h1+dw1
+
+dw2 <- (n*so2*h2)+(a)*0
+o2h2 <- o2h2+dw2
+
+o1h0
+o1h1
+o1h2
+o2h0
+o2h1
+o2h2
+```
+
+```{r}
+bp_input2_woh <- as.data.frame(c(o1h0, o1h1, o1h2,o2h0,o2h1,o2h2))
+colnames(bp_input2_woh) <- "oh before epoch input 2 weights"
+bp_input2_woh
+```
+
+```{r}
+##delta h node weights 
+dh1 <- h1*(1-h1)*((so1*o1h1)+(so2*o2h1))
+dh2 <- h2*(1-h2)*((so1*o1h2)+(so2*o2h2))
+
+#new h node weights
+dw0 <- (n*dh1*1)+(a*0)
+h1x0 <- h1x0+dw0
+dw1 <- (n*dh1*x1)+(a*0)
+h1x1 <- h1x1+dw0
+dw2 <- (n*dh1*x2)+(a*0)
+h1x2 <- h1x2+dw0
+
+dw0 <- (n*dh1*1)+(a*0)
+h2x0 <- h2x0+dw0
+dw1 <- (n*dh1*x1)+(a*0)
+h2x1 <- h2x1+dw0
+dw2 <- (n*dh1*x2)+(a*0)
+h2x2 <- h2x2+dw0
+
+h1x0
+h1x1
+h1x2
+h2x0
+h2x1
+h2x2
+```
+
+```{r}
+bp_input2_whx <- as.data.frame(c(h1x0,h1x1,h1x2,h2x0,h2x1,h2x2))
+colnames(bp_input2_whx) <- "hx before epoch input 2 weights"
+bp_input2_whx
+```
+
+```{r}
+cbind(bp_input1_woh,
+      bp_input1_whx,
+      bp_input2_woh,
+      bp_input2_whx)
+```
+
+##new weights
+```{r}
+nw_oh <- (bp_input1_woh+bp_input2_woh)/2
+nw_oh
+nw_hx <- (bp_input1_whx+bp_input2_whx)/2
+nw_hx
+```
+
+
+#after epoch1,input 1 - data and weights
+```{r}
+x1 <- 1
+x2 <- 0
+
+h1x0 <- nw_hx[1,1]
+h1x1 <- nw_hx[2,1]
+h1x2 <- nw_hx[3,1]
+h2x0 <- nw_hx[4,1]
+h2x1 <- nw_hx[5,1]
+h2x2 <- nw_hx[6,1]
+
+o1h0 <- nw_oh[1,1]
+o1h1 <- nw_oh[2,1]
+o1h2 <- nw_oh[3,1]
+o2h0 <- nw_oh[4,1]
+o2h1 <- nw_oh[5,1]
+o2h2 <- nw_oh[6,1]
+
+t1 <- .9
+t2 <- .1
+```
+
+##Hidden and output
+```{r}
+h1_in <- sum((x1*h1x1)+(x2*h1x2)+(1*h1x0))
+h1<- 1/(1+exp(-h1_in))
+h1
+
+h2_in <- sum((x1*h2x1)+(x2*h2x2)+(1*h2x0))
+h2<- 1/(1+exp(-h2_in))
+h2
+
+o1_in <- sum((h1*o1h1)+(h2*o1h2)+(1*o1h0))
+o1 <- 1/(1+exp(-o1_in))
+o1
+
+o2_in <- sum((h1*o2h1)+(h2*o2h2)+(1*o2h0))
+o2 <- 1/(1+exp(-o2_in))
+o2
+```
+
+##error
+```{r}
+Eo1 <-.5*(t1-o1)^2
+Eo2 <-.5*(t2-o2)^2
+Eo1
+Eo2
+```
+
+##backward propogation
+```{r}
+#delta output weights
+so1 <- o1*(1-o1)*(t1-o1)
+so2 <- o2*(1-o2)*(t2-o2)
+so1
+so2
+
+#new output weights
+dw0 <- (n*so1*1)+(a*0)
+o1h0 <- o1h0+dw0
+
+dw1 <- (n*so1*h1)+(a*0)
+o1h1 <- o1h1+dw1
+
+dw2 <- (n*so1*h2)+(a*0)
+o1h2 <- o1h2+dw2
+
+
+dw0 <- (n*so2*1)+(a)*0
+o2h0 <- o2h0+dw0
+
+dw1 <- (n*so2*h1)+(a)*0
+o2h1 <- o2h1+dw1
+
+dw2 <- (n*so2*h2)+(a)*0
+o2h2 <- o2h2+dw2
+
+o1h0
+o1h1
+o1h2
+o2h0
+o2h1
+o2h2
+```
+
+```{r}
+bp_input1_woh <- as.data.frame(c(o1h0, o1h1, o1h2,o2h0,o2h1,o2h2))
+colnames(bp_input1_woh) <- "oh after epoch 1 input 1 weights"
+bp_input1_woh
+```
+
+```{r}
+##delta h node weights   
+dh1 <- h1*(1-h1)*((so1*o1h1)+(so2*o2h1))
+dh2 <- h2*(1-h2)*((so1*o1h2)+(so2*o2h2))
+
+#new h node weights
+dw0 <- (n*dh1*1)+(a*0)
+h1x0 <- h1x0+dw0
+dw1 <- (n*dh1*x1)+(a*0)
+h1x1 <- h1x1+dw0
+dw2 <- (n*dh1*x2)+(a*0)
+h1x2 <- h1x2+dw0
+
+dw0 <- (n*dh1*1)+(a*0)
+h2x0 <- h2x0+dw0
+dw1 <- (n*dh1*x1)+(a*0)
+h2x1 <- h2x1+dw0
+dw2 <- (n*dh1*x2)+(a*0)
+h2x2 <- h2x2+dw0
+
+h1x0
+h1x1
+h1x2
+h2x0
+h2x1
+h2x2
+```
+
+```{r}
+bp_input1_whx <- as.data.frame(c(h1x0,h1x1,h1x2,h2x0,h2x1,h2x2))
+colnames(bp_input1_whx) <- "hx after epoch 1 input 1 weights"
+bp_input1_whx
+```
+
+#after epoch1,input 2 - data and weights
+```{r}
+x1 <- 0
+x2 <- 1
+
+h1x0 <- nw_hx[1,1]
+h1x1 <- nw_hx[2,1]
+h1x2 <- nw_hx[3,1]
+h2x0 <- nw_hx[4,1]
+h2x1 <- nw_hx[5,1]
+h2x2 <- nw_hx[6,1]
+
+o1h0 <- nw_oh[1,1]
+o1h1 <- nw_oh[2,1]
+o1h2 <- nw_oh[3,1]
+o2h0 <- nw_oh[4,1]
+o2h1 <- nw_oh[5,1]
+o2h2 <- nw_oh[6,1]
+
+t1 <- .1
+t2 <- .9
+```
+
+##Hidden and output
+```{r}
+h1_in <- sum((x1*h1x1)+(x2*h1x2)+(1*h1x0))
+h1<- 1/(1+exp(-h1_in))
+h1
+
+h2_in <- sum((x1*h2x1)+(x2*h2x2)+(1*h2x0))
+h2<- 1/(1+exp(-h2_in))
+h2
+
+o1_in <- sum((h1*o1h1)+(h2*o1h2)+(1*o1h0))
+o1 <- 1/(1+exp(-o1_in))
+o1
+
+o2_in <- sum((h1*o2h1)+(h2*o2h2)+(1*o2h0))
+o2 <- 1/(1+exp(-o2_in))
+o2
+```
+
+##error term
+```{r}
+eo1 <-.5*(t1-o1)^2
+eo2 <-.5*(t2-o2)^2
+eo1
+eo2
+```
+
+##backward propogation
+```{r}
+#delta output weights
+so1 <- o1*(1-o1)*(t1-o1)
+so2 <- o2*(1-o2)*(t2-o2)
+so1
+so2
+
+#new output weights
+dw0 <- (n*so1*1)+(a*0)
+o1h0 <- o1h0+dw0
+
+dw1 <- (n*so1*h1)+(a*0)
+o1h1 <- o1h1+dw1
+
+dw2 <- (n*so1*h2)+(a*0)
+o1h2 <- o1h2+dw2
+
+
+dw0 <- (n*so2*1)+(a)*0
+o2h0 <- o2h0+dw0
+
+dw1 <- (n*so2*h1)+(a)*0
+o2h1 <- o2h1+dw1
+
+dw2 <- (n*so2*h2)+(a)*0
+o2h2 <- o2h2+dw2
+
+o1h0
+o1h1
+o1h2
+o2h0
+o2h1
+o2h2
+```
+
+```{r}
+bp_input2_woh <- as.data.frame(c(o1h0, o1h1, o1h2,o2h0,o2h1,o2h2))
+colnames(bp_input2_woh) <- "oh after epoch1 input 2 weights"
+bp_input2_woh
+```
+
+```{r}
+##delta h node weights 
+dh1 <- h1*(1-h1)*((so1*o1h1)+(so2*o2h1))
+dh2 <- h2*(1-h2)*((so1*o1h2)+(so2*o2h2))
+
+#new h node weights
+dw0 <- (n*dh1*1)+(a*0)
+h1x0 <- h1x0+dw0
+dw1 <- (n*dh1*x1)+(a*0)
+h1x1 <- h1x1+dw0
+dw2 <- (n*dh1*x2)+(a*0)
+h1x2 <- h1x2+dw0
+
+dw0 <- (n*dh1*1)+(a*0)
+h2x0 <- h2x0+dw0
+dw1 <- (n*dh1*x1)+(a*0)
+h2x1 <- h2x1+dw0
+dw2 <- (n*dh1*x2)+(a*0)
+h2x2 <- h2x2+dw0
+
+h1x0
+h1x1
+h1x2
+h2x0
+h2x1
+h2x2
+```
+
+```{r}
+bp_input2_whx <- as.data.frame(c(h1x0,h1x1,h1x2,h2x0,h2x1,h2x2))
+colnames(bp_input2_whx) <- "hx epoch1 input 2  weights"
+bp_input2_whx
+```
+
+```{r}
+cbind(bp_input1_woh,
+      bp_input1_whx,
+      bp_input2_woh,
+      bp_input2_whx)
+```
+
+##new weights
+```{r}
+nw_oh <- (bp_input1_woh+bp_input2_woh)/2
+nw_oh
+nw_hx <- (bp_input1_whx+bp_input2_whx)/2
+nw_hx
+```
+
+
+#after epoch2,input 1 - data and weights
+```{r}
+x1 <- 1
+x2 <- 0
+
+h1x0 <- nw_hx[1,1]
+h1x1 <- nw_hx[2,1]
+h1x2 <- nw_hx[3,1]
+h2x0 <- nw_hx[4,1]
+h2x1 <- nw_hx[5,1]
+h2x2 <- nw_hx[6,1]
+
+o1h0 <- nw_oh[1,1]
+o1h1 <- nw_oh[2,1]
+o1h2 <- nw_oh[3,1]
+o2h0 <- nw_oh[4,1]
+o2h1 <- nw_oh[5,1]
+o2h2 <- nw_oh[6,1]
+
+t1 <- .9
+t2 <- .1
+```
+
+##Hidden and output
+```{r}
+h1_in <- sum((x1*h1x1)+(x2*h1x2)+(1*h1x0))
+h1<- 1/(1+exp(-h1_in))
+h1
+
+h2_in <- sum((x1*h2x1)+(x2*h2x2)+(1*h2x0))
+h2<- 1/(1+exp(-h2_in))
+h2
+
+o1_in <- sum((h1*o1h1)+(h2*o1h2)+(1*o1h0))
+o1 <- 1/(1+exp(-o1_in))
+o1
+
+o2_in <- sum((h1*o2h1)+(h2*o2h2)+(1*o2h0))
+o2 <- 1/(1+exp(-o2_in))
+o2
+```
+
+##error term
+```{r}
+eo1 <-.5*(t1-o1)^2
+eo2 <-.5*(t2-o2)^2
+eo1
+eo2
+```
+
+##backward propogation
+```{r}
+#delta output weights
+so1 <- o1*(1-o1)*(t1-o1)
+so2 <- o2*(1-o2)*(t2-o2)
+so1
+so2
+
+#new output weights
+dw0 <- (n*so1*1)+(a*0)
+o1h0 <- o1h0+dw0
+
+dw1 <- (n*so1*h1)+(a*0)
+o1h1 <- o1h1+dw1
+
+dw2 <- (n*so1*h2)+(a*0)
+o1h2 <- o1h2+dw2
+
+
+dw0 <- (n*so2*1)+(a)*0
+o2h0 <- o2h0+dw0
+
+dw1 <- (n*so2*h1)+(a)*0
+o2h1 <- o2h1+dw1
+
+dw2 <- (n*so2*h2)+(a)*0
+o2h2 <- o2h2+dw2
+
+o1h0
+o1h1
+o1h2
+o2h0
+o2h1
+o2h2
+```
+
+```{r}
+bp_input1_woh <- as.data.frame(c(o1h0, o1h1, o1h2,o2h0,o2h1,o2h2))
+colnames(bp_input1_woh) <- "oh after epoch 2 input 1 weights"
+bp_input1_woh
+```
+
+```{r}
+##delta h node weights   
+dh1 <- h1*(1-h1)*((so1*o1h1)+(so2*o2h1))
+dh2 <- h2*(1-h2)*((so1*o1h2)+(so2*o2h2))
+
+#new h node weights
+dw0 <- (n*dh1*1)+(a*0)
+h1x0 <- h1x0+dw0
+dw1 <- (n*dh1*x1)+(a*0)
+h1x1 <- h1x1+dw0
+dw2 <- (n*dh1*x2)+(a*0)
+h1x2 <- h1x2+dw0
+
+dw0 <- (n*dh1*1)+(a*0)
+h2x0 <- h2x0+dw0
+dw1 <- (n*dh1*x1)+(a*0)
+h2x1 <- h2x1+dw0
+dw2 <- (n*dh1*x2)+(a*0)
+h2x2 <- h2x2+dw0
+
+h1x0
+h1x1
+h1x2
+h2x0
+h2x1
+h2x2
+```
+
+```{r}
+bp_input1_whx <- as.data.frame(c(h1x0,h1x1,h1x2,h2x0,h2x1,h2x2))
+colnames(bp_input1_whx) <- "hx after epoch 2 input 1 weights"
+bp_input1_whx
+```
+
+#after epoch2,input 2 - data and weights
+```{r}
+x1 <- 0
+x2 <- 1
+
+h1x0 <- nw_hx[1,1]
+h1x1 <- nw_hx[2,1]
+h1x2 <- nw_hx[3,1]
+h2x0 <- nw_hx[4,1]
+h2x1 <- nw_hx[5,1]
+h2x2 <- nw_hx[6,1]
+
+o1h0 <- nw_oh[1,1]
+o1h1 <- nw_oh[2,1]
+o1h2 <- nw_oh[3,1]
+o2h0 <- nw_oh[4,1]
+o2h1 <- nw_oh[5,1]
+o2h2 <- nw_oh[6,1]
+
+t1 <- .1
+t2 <- .9
+```
+
+##Hidden and output
+```{r}
+h1_in <- sum((x1*h1x1)+(x2*h1x2)+(1*h1x0))
+h1<- 1/(1+exp(-h1_in))
+h1
+
+h2_in <- sum((x1*h2x1)+(x2*h2x2)+(1*h2x0))
+h2<- 1/(1+exp(-h2_in))
+h2
+
+o1_in <- sum((h1*o1h1)+(h2*o1h2)+(1*o1h0))
+o1 <- 1/(1+exp(-o1_in))
+o1
+
+o2_in <- sum((h1*o2h1)+(h2*o2h2)+(1*o2h0))
+o2 <- 1/(1+exp(-o2_in))
+o2
+```
+
+##error term
+```{r}
+eo1 <-.5*(t1-o1)^2
+eo2 <-.5*(t2-o2)^2
+eo1
+eo2
+```
+
+##backward propogation
+```{r}
+#delta output weights
+so1 <- o1*(1-o1)*(t1-o1)
+so2 <- o2*(1-o2)*(t2-o2)
+so1
+so2
+
+#new output weights
+dw0 <- (n*so1*1)+(a*0)
+o1h0 <- o1h0+dw0
+
+dw1 <- (n*so1*h1)+(a*0)
+o1h1 <- o1h1+dw1
+
+dw2 <- (n*so1*h2)+(a*0)
+o1h2 <- o1h2+dw2
+
+
+dw0 <- (n*so2*1)+(a)*0
+o2h0 <- o2h0+dw0
+
+dw1 <- (n*so2*h1)+(a)*0
+o2h1 <- o2h1+dw1
+
+dw2 <- (n*so2*h2)+(a)*0
+o2h2 <- o2h2+dw2
+
+o1h0
+o1h1
+o1h2
+o2h0
+o2h1
+o2h2
+```
+
+```{r}
+bp_input2_woh <- as.data.frame(c(o1h0, o1h1, o1h2,o2h0,o2h1,o2h2))
+colnames(bp_input2_woh) <- "oh input 2 after epoch 2 weights"
+bp_input2_woh
+```
+
+```{r}
+##delta h node weights 
+dh1 <- h1*(1-h1)*((so1*o1h1)+(so2*o2h1))
+dh2 <- h2*(1-h2)*((so1*o1h2)+(so2*o2h2))
+
+#new h node weights
+dw0 <- (n*dh1*1)+(a*0)
+h1x0 <- h1x0+dw0
+dw1 <- (n*dh1*x1)+(a*0)
+h1x1 <- h1x1+dw0
+dw2 <- (n*dh1*x2)+(a*0)
+h1x2 <- h1x2+dw0
+
+dw0 <- (n*dh1*1)+(a*0)
+h2x0 <- h2x0+dw0
+dw1 <- (n*dh1*x1)+(a*0)
+h2x1 <- h2x1+dw0
+dw2 <- (n*dh1*x2)+(a*0)
+h2x2 <- h2x2+dw0
+
+h1x0
+h1x1
+h1x2
+h2x0
+h2x1
+h2x2
+```
+
+```{r}
+bp_input2_whx <- as.data.frame(c(h1x0,h1x1,h1x2,h2x0,h2x1,h2x2))
+colnames(bp_input2_whx) <- "hx input 2 after epoch 2 weights"
+bp_input2_whx
+```
+
+```{r}
+cbind(bp_input1_woh,
+      bp_input1_whx,
+      bp_input2_woh,
+      bp_input2_whx)
+```
+
+##new weights
+```{r}
+nw_oh <- (bp_input1_woh+bp_input2_woh)/2
+nw_oh
+nw_hx <- (bp_input1_whx+bp_input2_whx)/2
+nw_hx
+```
+

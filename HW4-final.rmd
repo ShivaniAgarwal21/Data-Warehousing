@@ -1,0 +1,113 @@
+---
+title: "Naive Bayes"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+##Question 1:
+###1. mem_to_risk
+```{r}
+library(dplyr)
+mem_days  <- read.csv("/Users/shivani/Documents/Data Warehousing/hw/hw4/datasets/ETM-538638-001 DSS DATA WAREHOUSING (Winter 2020) - 2112020 - 827 PM/DayInHospital_Y2.csv")
+risk_model  <- read.csv("/Users/shivani/Documents/Data Warehousing/hw/hw4/datasets/ETM-538638-001 DSS DATA WAREHOUSING (Winter 2020) - 2112020 - 827 PM/risk_model_1.csv")
+#-----------****mem_to_risk****----------
+mem_to_risk <- merge(mem_days,risk_model, by.x=c("DaysInHospital_Y2"),by.y = c("Days"))
+mem_to_risk
+```
+
+###2.claims_to_risk:
+```{r}
+#-----------****claims_to_risk****----------
+claims_y1  <- read.csv("/Users/shivani/Documents/Data Warehousing/hw/hw4/datasets/ETM-538638-001 DSS DATA WAREHOUSING (Winter 2020) - 2112020 - 827 PM/Claims_Y1.csv")
+claims_to_risk <- merge(claims_y1,mem_to_risk, by.x =c("MemberID"),by.y = c("memberid"))
+claims_to_risk
+```
+
+
+###3.risk_count
+```{r risk_count}
+library(arules)
+#risk_count
+risks <- as.data.frame(as.character(claims_to_risk$RiskLevel))
+riskl <- as.list(risks)
+risk_count <- aggregate(risks, riskl, FUN=length)
+colnames(risk_count) <- c("RiskLevel", "RiskCount")
+risk_count
+#a_priori1 <- apriori(risk_count, parameter = NULL, appearance = NULL, control = NULL)
+a_priori <- risk_count
+no_claims <- length(claims_to_risk[,1])  
+a_priori$no_claims <- no_claims
+
+a_priori$Prob_Rc <- a_priori$RiskCount / no_claims
+a_priori
+colnames(a_priori) <- c("RiskLevel", "RiskCount","no_claims","Prob")
+a_priori
+write.csv(a_priori, file = "out_a_priori.csv", row.names = FALSE)
+on_charlson <- data.frame(as.character(claims_to_risk$RiskLevel),as.character(claims_to_risk$CharlsonIndex))
+on_charlson
+```
+
+###4 on_charlson
+```{r on_charlson}
+on_charlson <- data.frame(as.character(claims_to_risk$RiskLevel),as.character(claims_to_risk$CharlsonIndex))
+(colnames(on_charlson) <- c("RiskLevel", "CharlsonIndex"))
+on_charlson
+```
+
+##Question2
+```{r Question2}
+library(naivebayes)
+library(dplyr)
+library(ggplot2)
+claims_to_risk
+inf_to_risklevel <- data.frame(claims_to_risk$CharlsonIndex,claims_to_risk$PrimaryConditionGroup,claims_to_risk$DaysInHospital_Y2,claims_to_risk$RiskLevel)
+colnames(inf_to_risklevel) <- c("CharlsonIndex", "PrimaryConditionGroup","DaysInHospital_Y2","RiskLevel")
+inf_to_risklevel
+xtabs(~inf_to_risklevel$RiskLevel+inf_to_risklevel$CharlsonIndex+inf_to_risklevel$PrimaryConditionGroup+inf_to_risklevel$DaysInHospital_Y2,data = inf_to_risklevel)
+#g <- ggplot(inf_to_risklevel, aes(CharlsonIndex, PrimaryConditionGroup,DaysInHospital_Y2))
+#g + geom_point() + facet_grid(. ~ RiskLevel)
+
+```
+
+
+```{r}
+library(GoodmanKruskal)
+ InfPlot<- c("RiskLevel","CharlsonIndex","PrimaryConditionGroup","LengthOfStay")
+ Inf_Correlation<- subset(claims_to_risk, select = InfPlot)
+ Infmatrix<- GKtauDataframe(Testing_Correlation)
+ plot(GKmatrix1, corrColors = "blue")
+```
+
+
+##Question7
+
+Co-relation
+```{r}
+library(GoodmanKruskal) 
+InfPlot<- c("RiskLevel","specialty","placesvc","paydelay","LengthOfStay","dsfs","PrimaryConditionGroup", "CharlsonIndex","AgeAtFirstClaim")
+ #varset2<- c("RiskLevel","PrimaryConditionGroup","CharlsonIndex","LengthOfStay")
+member_Y1  <- read.csv("D:\\PSU\\Winter 2020\\Data warehousing\\HW 4\\Members_Y1.csv")
+age_model <- merge(claims_to_risk,member_Y1, by.x =c("MemberID"),by.y = c("MemberID"))
+ Inf_Correlation<- subset(age_model, select = InfPlot)
+ GKmatrix1<- GKtauDataframe(Inf_Correlation)
+ plot(GKmatrix1, corrColors = "blue")
+```
+
+Entropy based selection:
+```{r}
+library("FSelectorRcpp")
+data <- data.frame(claims_to_risk$specialty,claims_to_risk$placesvc,claims_to_risk$paydelay,claims_to_risk$dsfs,claims_to_risk$LengthOfStay,claims_to_risk$PrimaryConditionGroup,claims_to_risk$CharlsonIndex,claims_to_risk$RiskLevel)
+colnames(data) <- c("specialty","placesvc","paydelay","dsfs","LengthOfStay","PrimaryConditionGroup","CharlsonIndex","RiskLevel")
+levels(data$LengthOfStay)[levels(data$LengthOfStay)== '']
+FSelectorRcpp::information_gain(RiskLevel ~ . ,data)
+```
+
+
+
+
+

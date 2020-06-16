@@ -1,0 +1,53 @@
+---
+title: "HW1"
+Team Members: Chaitali Sawant,Harshita Gadiraju, Kyle Brown, Shivani Agarwal
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(sqldf)
+```
+
+## R Markdown
+
+##Question 6
+
+###1.	What are the top 10 states for orders (by dollar volume)? (5%)
+sqldf(' select * from (select c.bt_state, sum(total_amount) total_amount  from  orders ao, customers c where ao.cust_id = c.cust_id group by bt_state) order by total_amount desc limit 10')
+
+###2.	What are the top 10 countries for orders (by dollar volume)? (5%)
+sqldf(' select * from (select c.bt_country, sum(total_amount) total_amount from  orders ao, customers c where ao.cust_id = c.cust_id group by c.bt_country) order by total_amount desc limit 10')
+
+###3.	What are the top 10 selling products by units?  By dollar volume?  (5%)
+sqldf('select Product_name,product_id from (select ol.Product_name,product_id, sum(ol.order_qty) order_qty  from  order_lines ol group by ol.Product_name) order by order_qty desc limit 10')
+
+##By units. 
+sqldf('select Product_name,product_id from (select ol.Product_name,product_id, sum(ol.order_qty) order_qty  from  order_lines ol group by ol.Product_name) order by order_qty desc limit 10')
+
+##By dollar volume. 
+sqldf('select Product_name,product_id from (select ol.Product_name,product_id, sum(Ordered_Total) Ordered_Total from  order_lines ol group by ol.product_id) order by Ordered_Total desc limit 10')
+
+###4.	For each of the top two US states and each of the top two countries (excluding the US) in questions 1 and 2, what are the 5 top selling products by units as order quantity ?  By dollar volume? (5%)
+
+##For state CA: 
+sqldf('select Product_name,product_id from (select ol.Product_name,product_id, sum(ol.order_qty) order_qty  from  order_lines ol, customers c,orders o where ol.order_id = o.order_id and o.cust_id = c.cust_id and bt_state = "CA" and ol.product_name != "NA" group by ol.Product_name) order by order_qty desc limit 5')
+
+##For state INTL:  
+sqldf('select Product_name,product_id from (select ol.Product_name,product_id, sum(ol.order_qty) order_qty  from  order_lines ol, customers c,orders o where ol.order_id = o.order_id and o.cust_id = c.cust_id  and bt_state = "INTL" and ol.product_name != "NA" group by ol.Product_name) order by order_qty desc limit 5')
+
+##For countries “Canada”:
+
+sqldf('select Product_name,product_id from (select ol.Product_name,product_id, sum(ol.order_qty) order_qty  from  order_lines ol, customers c,orders o where ol.order_id = o.order_id and o.cust_id = c.cust_id and bt_country = "Canada" and ol.product_name != "NA" group by ol.Product_name) order by order_qty desc limit 5')
+
+##For countries “Singapore”:
+sqldf('select Product_name,product_id from (select ol.Product_name,product_id, sum(ol.order_qty) order_qty  from  order_lines ol, customers c,orders o where ol.order_id = o.order_id and o.cust_id = c.cust_id and bt_country = "Singapore" and ol.product_name != "NA" group by ol.Product_name) order by order_qty desc limit 5')
+
+###5.	Provide the customer ID’s, order dates, and order amounts for all customers who have ordered more than once. (5%)
+
+sqldf('select cust_id, order_date,total_amount 
+from (select count(order_id) oddsum,cust_id,order_date,total_amount from orders group by cust_id) od  WHERE od.oddsum >1') 
+
+
+
+

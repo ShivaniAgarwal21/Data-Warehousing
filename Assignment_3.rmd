@@ -1,0 +1,518 @@
+---
+title: "HW3"
+author: "Hashita Gadiraju,Chaitali Sawant,Shivani Agarwal"
+date: "2/6/2020"
+output: html_document
+---
+
+## Euclidean Distance
+
+###Question2
+```{r Euclidean distance through formula}
+
+d1=sqrt((0-0)^2+(0-0)^2+(0-0)^2+(0-0)^2)
+d2=sqrt((0-0)^2+(0-0)^2+(0-0)^2+(1-0)^2)
+d3=sqrt((1-0)^2+(0-0)^2+(0-0)^2+(0-0)^2)
+d4=sqrt((1-0)^2+(1-0)^2+(0-0)^2+(0-0)^2)
+d5=sqrt((1-0)^2+(1-0)^2+(1-0)^2+(0-0)^2)
+d6=sqrt((1-0)^2+(1-0)^2+(1-0)^2+(1-0)^2)
+d7=sqrt((1-0)^2+(1-0)^2+(1-0)^2+(1-0)^2)
+d8=sqrt((0-0)^2+(1-0)^2+(0-0)^2+(0-0)^2)
+d9=sqrt((0-0)^2+(1-0)^2+(1-0)^2+(0-0)^2)
+d10=sqrt((1-0)^2+(1-0)^2+(1-0)^2+(0-0)^2)
+d11=sqrt((0-0)^2+(1-0)^2+(1-0)^2+(1-0)^2)
+d12=sqrt((1-0)^2+(1-0)^2+(0-0)^2+(1-0)^2)
+d13=sqrt((1-0)^2+(0-0)^2+(1-0)^2+(0-0)^2)
+d14=sqrt((1-0)^2+(1-0)^2+(0-0)^2+(1-0)^2)
+mydat <- structure(list(Play = c("No","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","Yes","No"),
+        outlook = c(0,0, 1, 1,1,1,1,0,0,1,0,1,1,1,0),
+        temperature = c(0,0,0,1,1,1,1,1,1,1,1,1, 0, 1,0),
+        humid = c(0,0,0,0,1,1,1, 0, 1, 1,1,0,1,0,0),
+        windy = c(0,1,0,0,0,1,1,0,0,0,1,1,0,1, 0),
+        EuclideanDistance = c(d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14)),
+        .Names = c("Play", "outlook", "temperature", "humid", "windy","Euclidean distance"),
+        class = "data.frame", row.names = c(NA, -15L))
+mydat
+```
+
+## Manhattan distance
+
+
+
+###Question 2
+```{r Manhattan distance}
+mydat <- structure(list(
+        Play = c("No","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","Yes","No"),
+        outlook = c(0,0, 1, 1,1,1,1,0,0,1,0,1,1,1,0),
+        temperature = c(0,0,0,1,1,1,1,1,1,1,1,1, 0, 1,0),
+        humid = c(0,0,0,0,1,1,1, 0, 1, 1,1,0,1,0,0),
+        windy = c(0,1,0,0,0,1,1,0,0,0,1,1,0,1, 0)),
+        .Names = c("Play", "outlook", "temperature", "humid", "windy"),
+        class = "data.frame", row.names = c(NA, -15L))
+mydat
+
+d1=abs(0-0)+abs(0-0)+abs(0-0)+abs(0-0)
+d2=abs(0-0)+abs(0-0)+abs(0-0)+abs(1-0)
+d3=abs(1-0)+abs(0-0)+abs(0-0)+abs(0-0)
+d4=abs(1-0)+abs(1-0)+abs(0-0)+abs(0-0)
+d5=abs(1-0)+abs(1-0)+abs(1-0)+abs(0-0)
+d6=abs(1-0)+abs(1-0)+abs(1-0)+abs(1-0)
+d7=abs(1-0)+abs(1-0)+abs(1-0)+abs(1-0)
+d8=abs(0-0)+abs(1-0)+abs(0-0)+abs(0-0)
+d9=abs(0-0)+abs(1-0)+abs(1-0)+abs(0-0)
+d10=abs(1-0)+abs(1-0)+abs(1-0)+abs(0-0)
+d11=abs(0-0)+abs(1-0)+abs(1-0)+abs(1-0)
+d12=abs(1-0)+abs(1-0)+abs(0-0)+abs(1-0)
+d13=abs(1-0)+abs(0-0)+abs(1-0)+abs(0-0)
+d14=abs(1-0)+abs(1-0)+abs(0-0)+abs(1-0)
+mydat <- structure(list(Play = c("No","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","Yes","No"),
+        outlook = c(0,0, 1, 1,1,1,1,0,0,1,0,1,1,1,0),
+        temperature = c(0,0,0,1,1,1,1,1,1,1,1,1, 0, 1,0),
+        humid = c(0,0,0,0,1,1,1, 0, 1, 1,1,0,1,0,0),
+        windy = c(0,1,0,0,0,1,1,0,0,0,1,1,0,1, 0),
+        EuclideanDistance = c(d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14)),
+        .Names = c("Play", "outlook", "temperature", "humid", "windy","Manhattan distance"),
+        class = "data.frame", row.names = c(NA, -15L))
+mydat
+
+```
+
+
+
+## Manhattan distance
+###Question 2B
+```{r Manhattan distance}
+mydat <- structure(list(
+        Play = c("No","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","Yes","No"),
+        outlook = c(0,0, 1, 2,2,2,1,0,0,2,0,1,1,2,0),
+              temperature = c(0,0,0,1,1,1,1,1,1,1,1,1, 0, 1,0),
+        humid = c(0,0,0,0,1,1,1, 0, 1, 1,1,0,1,0,0),
+        windy = c(0,1,0,0,0,1,1,0,0,0,1,1,0,1, 0)),
+        .Names = c("Play", "outlook", "temperature", "humid", "windy"),
+        class = "data.frame", row.names = c(NA, -15L))
+mydat
+
+d1=abs(0-0)+abs(0-0)+abs(0-0)+abs(0-0)
+d2=abs(0-0)+abs(0-0)+abs(0-0)+abs(1-0)
+d3=abs(1-0)+abs(0-0)+abs(0-0)+abs(0-0)
+d4=abs(2-0)+abs(1-0)+abs(0-0)+abs(0-0)
+d5=abs(2-0)+abs(1-0)+abs(1-0)+abs(0-0)
+d6=abs(2-0)+abs(1-0)+abs(1-0)+abs(1-0)
+d7=abs(1-0)+abs(1-0)+abs(1-0)+abs(1-0)
+d8=abs(0-0)+abs(1-0)+abs(0-0)+abs(0-0)
+d9=abs(0-0)+abs(1-0)+abs(1-0)+abs(0-0)
+d10=abs(2-0)+abs(1-0)+abs(1-0)+abs(0-0)
+d11=abs(0-0)+abs(1-0)+abs(1-0)+abs(1-0)
+d12=abs(1-0)+abs(1-0)+abs(0-0)+abs(1-0)
+d13=abs(1-0)+abs(0-0)+abs(1-0)+abs(0-0)
+d14=abs(2-0)+abs(1-0)+abs(0-0)+abs(1-0)
+mydat <- structure(list(Play = c("No","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","Yes","No"),
+        outlook = c(0,0, 1, 2,2,2,1,0,0,2,0,1,1,2,0),
+        temperature = c(0,0,0,1,1,1,1,1,1,1,1,1, 0, 1,0),
+        humid = c(0,0,0,0,1,1,1, 0, 1, 1,1,0,1,0,0),
+        windy = c(0,1,0,0,0,1,1,0,0,0,1,1,0,1, 0),
+        EuclideanDistance = c(d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14)),
+        .Names = c("Play", "outlook", "temperature", "humid", "windy","Manhattan distance"),
+        class = "data.frame", row.names = c(NA, -15L))
+mydat
+```
+
+
+###Question2B Euclidean Distance
+```{r Euclidean distance through formula}
+
+d1=sqrt((0-0)^2+(0-0)^2+(0-0)^2+(0-0)^2)
+d2=sqrt((0-0)^2+(0-0)^2+(0-0)^2+(1-0)^2)
+d3=sqrt((1-0)^2+(0-0)^2+(0-0)^2+(0-0)^2)
+d4=sqrt((2-0)^2+(1-0)^2+(0-0)^2+(0-0)^2)
+d5=sqrt((2-0)^2+(1-0)^2+(1-0)^2+(0-0)^2)
+d6=sqrt((2-0)^2+(1-0)^2+(1-0)^2+(1-0)^2)
+d7=sqrt((1-0)^2+(1-0)^2+(1-0)^2+(1-0)^2)
+d8=sqrt((0-0)^2+(1-0)^2+(0-0)^2+(0-0)^2)
+d9=sqrt((0-0)^2+(1-0)^2+(1-0)^2+(0-0)^2)
+d10=sqrt((2-0)^2+(1-0)^2+(1-0)^2+(0-0)^2)
+d11=sqrt((0-0)^2+(1-0)^2+(1-0)^2+(1-0)^2)
+d12=sqrt((1-0)^2+(1-0)^2+(0-0)^2+(1-0)^2)
+d13=sqrt((1-0)^2+(0-0)^2+(1-0)^2+(0-0)^2)
+d14=sqrt((2-0)^2+(1-0)^2+(0-0)^2+(1-0)^2)
+mydat <- structure(list(Play = c("No","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","Yes","No"),
+        outlook = c(0,0, 1, 2,2,2,1,0,0,2,0,1,1,2,0),
+        temperature = c(0,0,0,1,1,1,1,1,1,1,1,1, 0, 1,0),
+        humid = c(0,0,0,0,1,1,1, 0, 1, 1,1,0,1,0,0),
+        windy = c(0,1,0,0,0,1,1,0,0,0,1,1,0,1, 0),
+        EuclideanDistance = c(d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14)),
+        .Names = c("Play", "outlook", "temperature", "humid", "windy","Euclidean distance"),
+        class = "data.frame", row.names = c(NA, -15L))
+mydat
+```
+## Manhattan distance
+###Question 3
+```{r Manhattan distance}
+mydat <- structure(list(
+        Play = c("No","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","Yes","No"),
+        outlook = c(0,0, 1, 2,2,2,1,0,0,2,0,1,1,2,0),
+        temperature = c(0,0,0,15,30,30,30,15,30,15,15,15,0,15,0),
+        humid = c(0,0,0,0,1,1,1, 0, 1, 1,1,0,1,0,0),
+        windy = c(0,1,0,0,0,1,1,0,0,0,1,1,0,1, 0)),
+        .Names = c("Play", "outlook", "temperature", "humid", "windy"),
+        class = "data.frame", row.names = c(NA, -15L))
+mydat
+
+d1=abs(0-0)+abs(0-0)+abs(0-0)+abs(0-0)
+d2=abs(0-0)+abs(0-0)+abs(0-0)+abs(1-0)
+d3=abs(1-0)+abs(0-0)+abs(0-0)+abs(0-0)
+d4=abs(2-0)+abs(15-0)+abs(0-0)+abs(0-0)
+d5=abs(2-0)+abs(30-0)+abs(1-0)+abs(0-0)
+d6=abs(2-0)+abs(30-0)+abs(1-0)+abs(1-0)
+d7=abs(1-0)+abs(30-0)+abs(1-0)+abs(1-0)
+d8=abs(0-0)+abs(15-0)+abs(0-0)+abs(0-0)
+d9=abs(0-0)+abs(30-0)+abs(1-0)+abs(0-0)
+d10=abs(2-0)+abs(15-0)+abs(1-0)+abs(0-0)
+d11=abs(0-0)+abs(15-0)+abs(1-0)+abs(1-0)
+d12=abs(1-0)+abs(15-0)+abs(0-0)+abs(1-0)
+d13=abs(1-0)+abs(0-0)+abs(1-0)+abs(0-0)
+d14=abs(2-0)+abs(15-0)+abs(0-0)+abs(1-0)
+mydat <- structure(list(Play = c("No","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","Yes","No"),
+        outlook = c(0,0, 1, 2,2,2,1,0,0,2,0,1,1,2,0),
+       temperature = c(0,0,0,15,30,30,30,15,30,15,15,15,0,15,0),
+        humid = c(0,0,0,0,1,1,1, 0, 1, 1,1,0,1,0,0),
+        windy = c(0,1,0,0,0,1,1,0,0,0,1,1,0,1, 0),
+        EuclideanDistance = c(d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14)),
+        .Names = c("Play", "outlook", "temperature", "humid", "windy","Manhattan distance"),
+        class = "data.frame", row.names = c(NA, -15L))
+mydat
+```
+
+##Euclidean Distance
+###Question3
+
+```{r}
+
+d1=sqrt((0-0)^2+(0-0)^2+(0-0)^2+(0-0)^2)
+d2=sqrt((0-0)^2+(0-0)^2+(0-0)^2+(1-0)^2)
+d3=sqrt((1-0)^2+(0-0)^2+(0-0)^2+(0-0)^2)
+d4=sqrt((2-0)^2+(15-0)^2+(0-0)^2+(0-0)^2)
+d5=sqrt((2-0)^2+(30-0)^2+(1-0)^2+(0-0)^2)
+d6=sqrt((2-0)^2+(30-0)^2+(1-0)^2+(1-0)^2)
+d7=sqrt((1-0)^2+(30-0)^2+(1-0)^2+(1-0)^2)
+d8=sqrt((0-0)^2+(15-0)^2+(0-0)^2+(0-0)^2)
+d9=sqrt((0-0)^2+(30-0)^2+(1-0)^2+(0-0)^2)
+d10=sqrt((2-0)^2+(15-0)^2+(1-0)^2+(0-0)^2)
+d11=sqrt((0-0)^2+(15-0)^2+(1-0)^2+(1-0)^2)
+d12=sqrt((1-0)^2+(15-0)^2+(0-0)^2+(1-0)^2)
+d13=sqrt((1-0)^2+(0-0)^2+(1-0)^2+(0-0)^2)
+d14=sqrt((2-0)^2+(15-0)^2+(0-0)^2+(1-0)^2)
+mydat <- structure(list(Play = c("No","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","Yes","No"),
+        outlook = c(0,0, 1, 2,2,2,1,0,0,2,0,1,1,2,0),
+        temperature = c(0,0,0,15,30,30,30,15,30,15,15,15,0,15,0),
+        humid = c(0,0,0,0,1,1,1, 0, 1, 1,1,0,1,0,0),
+        windy = c(0,1,0,0,0,1,1,0,0,0,1,1,0,1, 0),
+        EuclideanDistance = c(d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14)),
+        .Names = c("Play", "outlook", "temperature", "humid", "windy","Euclidean distance"),
+        class = "data.frame", row.names = c(NA, -15L))
+mydat
+```
+
+## Manhattan distance
+###Question 4
+```{r Manhattan distance}
+mydat <- structure(list(
+        Play = c("No","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","Yes","No"),
+        outlook = c(0,0, 1, 2,2,2,1,0,0,2,0,1,1,2,0),
+        temperature = c(0,0,0,1,2,2,2,1,2,1,1,1,0,1,0),
+        humid = c(0,0,0,0,1,1,1, 0, 1, 1,1,0,1,0,0),
+        windy = c(0,1,0,0,0,1,1,0,0,0,1,1,0,1, 0)),
+        .Names = c("Play", "outlook", "temperature", "humid", "windy"),
+        class = "data.frame", row.names = c(NA, -15L))
+mydat
+
+d1=abs(0-0)+abs(0-0)+abs(0-0)+abs(0-0)
+d2=abs(0-0)+abs(0-0)+abs(0-0)+abs(1-0)
+d3=abs(1-0)+abs(0-0)+abs(0-0)+abs(0-0)
+d4=abs(2-0)+abs(1-0)+abs(0-0)+abs(0-0)
+d5=abs(2-0)+abs(2-0)+abs(1-0)+abs(0-0)
+d6=abs(2-0)+abs(2-0)+abs(1-0)+abs(1-0)
+d7=abs(1-0)+abs(2-0)+abs(1-0)+abs(1-0)
+d8=abs(0-0)+abs(1-0)+abs(0-0)+abs(0-0)
+d9=abs(0-0)+abs(2-0)+abs(1-0)+abs(0-0)
+d10=abs(2-0)+abs(1-0)+abs(1-0)+abs(0-0)
+d11=abs(0-0)+abs(1-0)+abs(1-0)+abs(1-0)
+d12=abs(1-0)+abs(1-0)+abs(0-0)+abs(1-0)
+d13=abs(1-0)+abs(0-0)+abs(1-0)+abs(0-0)
+d14=abs(2-0)+abs(1-0)+abs(0-0)+abs(1-0)
+mydat <- structure(list(Play = c("No","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","Yes","No"),
+        outlook = c(0,0, 1, 2,2,2,1,0,0,2,0,1,1,2,0),
+       temperature = c(0,0,0,1,2,2,2,1,2,1,1,1,0,1,0),
+        humid = c(0,0,0,0,1,1,1, 0, 1, 1,1,0,1,0,0),
+        windy = c(0,1,0,0,0,1,1,0,0,0,1,1,0,1, 0),
+        EuclideanDistance = c(d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14)),
+        .Names = c("Play", "outlook", "temperature", "humid", "windy","Manhattan distance"),
+        class = "data.frame", row.names = c(NA, -15L))
+mydat
+```
+
+##Euclidean Distance
+###Question4
+
+```{r}
+
+d1=sqrt((0-0)^2+(0-0)^2+(0-0)^2+(0-0)^2)
+d2=sqrt((0-0)^2+(0-0)^2+(0-0)^2+(1-0)^2)
+d3=sqrt((1-0)^2+(0-0)^2+(0-0)^2+(0-0)^2)
+d4=sqrt((2-0)^2+(1-0)^2+(0-0)^2+(0-0)^2)
+d5=sqrt((2-0)^2+(2-0)^2+(1-0)^2+(0-0)^2)
+d6=sqrt((2-0)^2+(2-0)^2+(1-0)^2+(1-0)^2)
+d7=sqrt((1-0)^2+(2-0)^2+(1-0)^2+(1-0)^2)
+d8=sqrt((0-0)^2+(1-0)^2+(0-0)^2+(0-0)^2)
+d9=sqrt((0-0)^2+(2-0)^2+(1-0)^2+(0-0)^2)
+d10=sqrt((2-0)^2+(1-0)^2+(1-0)^2+(0-0)^2)
+d11=sqrt((0-0)^2+(1-0)^2+(1-0)^2+(1-0)^2)
+d12=sqrt((1-0)^2+(1-0)^2+(0-0)^2+(1-0)^2)
+d13=sqrt((1-0)^2+(0-0)^2+(1-0)^2+(0-0)^2)
+d14=sqrt((2-0)^2+(1-0)^2+(0-0)^2+(1-0)^2)
+mydat <- structure(list(Play = c("No","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","Yes","No"),
+        outlook = c(0,0, 1, 2,2,2,1,0,0,2,0,1,1,2,0),
+         temperature = c(0,0,0,1,2,2,2,1,2,1,1,1,0,1,0),
+        humid = c(0,0,0,0,1,1,1, 0, 1, 1,1,0,1,0,0),
+        windy = c(0,1,0,0,0,1,1,0,0,0,1,1,0,1, 0),
+        EuclideanDistance = c(d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14)),
+        .Names = c("Play", "outlook", "temperature", "humid", "windy","Euclidean distance"),
+        class = "data.frame", row.names = c(NA, -15L))
+mydat
+```
+
+
+## Initial Perceptron
+```{r perceptron inital}
+N = 1 # total number of data points each group
+
+
+g_x = c(1,0,0)
+g_y = c(0,1,1)
+g_z = c(1,1,1)
+
+group = c(rep(-1,N), rep(1,N))
+
+print(g_x)
+print(g_y)
+print(g_z)
+print(group)
+plot(g_x, g_y, type='n', xlab='X', ylab='Y')
+points(g_x, g_y, col='red')
+points(g_x, g_y, col='blue')
+w0 = 0.1 # initial weitht
+w1 = 0.1 # initial weight
+w2 = -0.3 # initial weitht
+
+M = 1            # number of epochs to run
+eta = .2       # learning rate
+th = .9          # threshold to stop
+verbose = F   # whether detailed weight update info is printed
+
+for (i in 1:M){
+    print(paste('Epoch starts: ', i))
+    
+    ## We reshuffle the order of the datapoint for each epoch.
+    index = 1:(N)
+    index = sample(index)
+    
+    for (j in index){
+      print(paste('g_x j value inside loop',g_x[j]))
+        y_j1 = w0 + w1*g_x[j] + w2*g_x[j+1]
+         y_j2 = w0 + w1*g_y[j] + w2*g_y[j+1]
+          y_j3 = w0 + w1*g_z[j] + w2*g_z[j+1]
+        print(paste('y_j1 j value inside loop',y_j1))
+        print(paste('y_j2 j value inside loop',y_j2))
+        print(paste('y_j3 j value inside loop',y_j3))
+        if (y_j1 >= 0){
+            pred_j1 = 1
+        }else{
+            pred_j1 = 0}
+            if (y_j2 >= 0){
+            pred_j2 = 1
+        }else{
+            pred_j2 = 0}
+        if (y_j3 >= 0){
+            pred_j3 = 1
+        }else{
+            pred_j3 = 0}
+         print(paste('pred_j1 j value inside loop',pred_j1))
+        print(paste('pred_j2 j value inside loop',pred_j2))
+        print(paste('pred_j3 j value inside loop',pred_j3))
+        l1 =  1/2 * (g_x[j+2] - pred_j1)^2
+        l2 =  1/2 * (g_y[j+2] - pred_j2)^2
+        l3 =  1/2 * (g_z[j+2] - pred_j3)^2
+           print(paste('l1 j value inside loop',l1))
+            print(paste('l1 j value inside loop',l2))
+             print(paste('l1 j value inside loop',l3))
+             l_all = 1/3 *(l1 + l2 +l3)
+               print(paste('l_all j value inside loop',l_all))
+        ## Accuracy
+               if (g_x[j+2] == pred_j1){
+                 a1 = 1
+               }else{
+                 a1= 0
+               }
+                if (g_y[j+2] == pred_j2){
+                 a2 = 1
+               }else{
+                 a2= 0
+               }
+                 if (g_z[j+2] == pred_j3){
+                 a3 = 1
+               }else{
+                 a3= 0
+               }
+      
+               print(paste('a1 value inside loop',a1))
+               print(paste('a2 value inside loop',a2))
+               print(paste('a3 value inside loop',a3))
+               acc = 1/3 *(a1+a2+a3)
+               print(paste('acc value inside loop',acc))
+          ### New Weights
+        ##K=1
+               w0 =  w0 + (eta*(g_x[j+2] - pred_j1)*g_x[j])
+        w1 = w1 + (eta*(g_x[j+2] - pred_j1)*g_x[j+1])
+        w2 = w2 + (eta*(g_x[j+2] - pred_j1)*g_x[j+2])
+        
+  if (verbose == T){
+            print(paste('  -> updating data point ', j, ' : '))
+            print(paste('     -> w0: ' ,w0))
+            print(paste('     -> w0: ' ,w1))
+            print(paste('     -> w0: ' ,w2))
+        }
+
+    
+    print(paste('Epoch ends: ', i, ' WITH accuracy: ', acc))
+          ##K=2
+    s0 = w0
+    s1 = w1
+    s2 = w2
+    
+    print(paste('s0 value inside loop',s0))
+               print(paste('s1 value inside loop',s1))
+               print(paste('s2 value inside loop',s2))
+                print(paste('s2 value inside loop',g_y[j]))
+                print(paste('s2 value inside loop',g_y[j+1]))
+                print(paste('s2 value inside loop',g_y[j+2]))
+                print(paste('s2 value inside loop',pred_j1))
+                
+               
+        w_1 =  s0 + (eta*(g_y[j+2] - pred_j2)*g_y[j])
+        w_2 = s1 + (eta*(g_y[j+2] - pred_j2)*g_y[j+1])
+        w_3 = s2 + (eta*(g_y[j+2] - pred_j2)*g_y[j+2])
+        
+            print(paste('     -> w0: ' ,w_1))
+            print(paste('     -> w0: ' ,w_2))
+            print(paste('     -> w0: ' ,w_3))
+            
+        wf1 =  w_1 + (eta*(g_z[j+2] - pred_j3)*g_z[j])
+        wf2 = w_2 + (eta*(g_z[j+2] - pred_j3)*g_z[j+1])
+        wf3 = w_3 + (eta*(g_z[j+2] - pred_j3)*g_z[j+2])
+        
+            print(paste('  Final updated   -> wf1: ' ,wf1))
+            print(paste(' Final updated     -> wf2: ' ,wf2))
+            print(paste(' Final updated     -> wf3: ' ,wf3))
+                print(paste('Epoch ends: ', i, ' WITH accuracy: ', acc))
+  
+    
+    if (acc >= th){
+      break
+    }}
+}  
+
+```
+
+## Perceptron with Updated weights
+```{r}
+N = 1 # total number of data points each group
+
+
+g_x = c(1,0,0)
+g_y = c(0, 1,1)
+g_z = c(1,1,1)
+
+group = c(rep(-1,N), rep(1,N))
+
+print(g_x)
+print(g_y)
+print(g_z)
+print(group)
+plot(g_x, g_y, type='n', xlab='X', ylab='Y')
+points(g_x, g_y, col='red')
+points(g_x, g_y, col='blue')
+w0 = 0.1 # updated weitht
+w1 = 0.5 # updated weight
+w2 = 0.1 # updated weitht
+
+M = 1            # number of epochs to run
+th = .9          # threshold to stop
+verbose = F   # whether detailed weight update info is printed
+
+for (i in 1:M){
+    print(paste('Epoch starts: ', i))
+    
+    ## We reshuffle the order of the datapoint for each epoch.
+    index = 1:(N)
+    index = sample(index)
+    
+    for (j in index){
+      print(paste('g_x j value inside loop',g_x[j]))
+        y_j1 = w0 + w1*g_x[j] + w2*g_x[j+1]
+         y_j2 = w0 + w1*g_y[j] + w2*g_y[j+1]
+          y_j3 = w0 + w1*g_z[j] + w2*g_z[j+1]
+        print(paste('y_j1 j value inside loop',y_j1))
+        print(paste('y_j2 j value inside loop',y_j2))
+        print(paste('y_j3 j value inside loop',y_j3))
+        if (y_j1 >= 0){
+            pred_j1 = 1
+        }else{
+            pred_j1 = 0}
+            if (y_j2 >= 0){
+            pred_j2 = 1
+        }else{
+            pred_j2 = 0}
+        if (y_j3 >= 0){
+            pred_j3 = 1
+        }else{
+            pred_j3 = 0}
+         print(paste('pred_j1 j value inside loop',pred_j1))
+        print(paste('pred_j2 j value inside loop',pred_j2))
+        print(paste('pred_j3 j value inside loop',pred_j3))
+        l1 =  1/2 * (g_x[j+2] - pred_j1)^2
+        l2 =  1/2 * (g_y[j+2] - pred_j2)^2
+        l3 =  1/2 * (g_z[j+2] - pred_j3)^2
+           print(paste('l1 j value inside loop',l1))
+            print(paste('l1 j value inside loop',l2))
+             print(paste('l1 j value inside loop',l3))
+             l_all = 1/3 *(l1 + l2 +l3)
+               print(paste('l_all j value inside loop',l_all))
+        ## Accuracy
+               if (g_x[j+2] == pred_j1){
+                 a1 = 1
+               }else{
+                 a1= 0
+               }
+                if (g_y[j+2] == pred_j2){
+                 a2 = 1
+               }else{
+                 a2= 0
+               }
+                 if (g_z[j+2] == pred_j3){
+                 a3 = 1
+               }else{
+                 a3= 0
+               }
+      
+               print(paste('a1 value inside loop',a1))
+               print(paste('a2 value inside loop',a2))
+               print(paste('a3 value inside loop',a3))
+               acc = 1/3 *(a1+a2+a3)
+               print(paste('acc value inside loop',acc))
+
+    print(paste('Epoch ends: ', i, ' WITH accuracy: ', acc))
+    if (acc >= th){
+      break
+    }
+}       } 
+```

@@ -1,0 +1,116 @@
+---
+title: "HW2_final"
+author: "Chaitali Sawant,Hashita Gadiraju,Kyle Brown,Shivani Agarwal"
+date: "1/29/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Ques4 4.	Simulate the 1R algorithm.  IGNORE RISK LEVEL A.  Build a 1R rule for each of Primary Condition Group, Charlson Index, and Length of Stay.  Which one works better?
+>Results based on oneR package.
+
+```{r}
+library(OneR)
+Heritage<- data.frame(Heritage_RiskADeleted)
+data <- optbin(Heritage)
+model<- OneR(data, verbose = TRUE)
+summary(model)
+prediction <- predict(model,Heritage)
+eval_model(prediction,Heritage)
+```
+
+### OneRModel
+### Binary tree for CharlsonIndex
+
+```{r}
+
+library(rpart)
+library(rpart.plot)
+dim(Heritage_RiskADeleted)
+dtm <- rpart(RiskLevel~CharlsonIndex,Heritage_RiskADeleted,method = "class")
+dtm
+rpart.plot(dtm)
+```
+
+### Binary tree for LengthofStay
+
+```{r}
+library(RcppGreedySetCover)
+library(printr)
+library(stats)
+library(rpart)
+library(rpart.plot)
+dim(Heritage_RiskADeleted)
+dtm <- rpart(RiskLevel~LengthOfStay,Heritage_RiskADeleted,method = "class")
+dtm
+rpart.plot(dtm)
+```
+
+### Binary tree for PrimaryConditionGroup
+```{r}
+library(RcppGreedySetCover)
+library(printr)
+library(stats)
+library(rpart)
+library(rpart.plot)
+dim(Heritage_RiskADeleted)
+dtm <- rpart(RiskLevel~PrimaryConditionGroup,Heritage_RiskADeleted,method = "class")
+dtm
+rpart.plot(dtm)
+```
+
+### Question 6: IGNORE RISK LEVEL A.  Experiment with different schemes for quantizing risk level.  Do you notice a difference?	
+
+## Below are the two rules generated for charlson index using Association Algorithm (arules package).
+
+```{r charlson}
+library(arules)
+library(Matrix)
+charlsonindex <-Heritage_RiskADeleted[,c(13,16)]
+rules=apriori(charlsonindex,parameter = list(supp=0.1,conf=0.5,minlen=2))
+rules=sort(rules,by="lift")
+rules=sort(rules,by="lift")
+inspect(rules)
+```
+
+## PrimaryconditionGroup using Association Algorithm (arules package).
+
+```{r primary}
+library(arules) 
+library(Matrix)
+primarycondition <-Heritage_RiskADeleted[,c(12,16)]
+rules=apriori(primarycondition,parameter = list(supp=0.1,conf=0.5,minlen=2))
+rules=sort(rules,by="lift")
+inspect(rules)
+```
+
+##LengthOfStay using Association Algorithm (arules package).
+
+```{r length}
+library(arules)
+library(Matrix)
+length <-Heritage_RiskADeleted[,c(10,16)]
+rules=apriori(length,parameter = list(supp=0.1,conf=0.5,minlen=2))
+rules=sort(rules,by="lift")
+inspect(rules)
+```
+
+###K-Means Clustering
+
+
+```{r}
+library(datasets)
+library(dplyr)
+library(VIM)
+head(Heritage_RiskADeleted)
+set.seed(20)
+aggr(Heritage_RiskADeleted)
+Heritage_RiskADeletedCluster <- kmeans(Heritage_RiskADeleted[, 1:2], 3, nstart = 20)
+Heritage_RiskADeletedCluster
+aggr(Heritage_RiskADeletedCluster$cluster)
+table(Heritage_RiskADeletedCluster$cluster, Heritage_RiskADeleted$RiskLevel)
+Heritage_RiskADeletedCluster$cluster <- as.factor(Heritage_RiskADeletedCluster$cluster)
+```
