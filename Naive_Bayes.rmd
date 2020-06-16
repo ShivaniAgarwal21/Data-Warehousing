@@ -1,0 +1,218 @@
+---
+title: "NaiveBayes"
+author: "Chaitali Sawant, Harshita Gadiraju and Shivani Agarwal"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Naive Bayes 
+```{r}
+library(e1071)
+library(caret)
+library(gains)
+library(pander)
+library(FNN)
+library(neuralnet)
+library(nnet)
+library(sqldf)
+```
+
+```{r reading my dataset}
+abnb.df <- read.csv("/Users/shivani/Documents/Data Warehousing/Project/Final Project/dataset/NaiveBayes/NaiveBayes.csv")
+abnb.df$price <- as.numeric(abnb.df$price)
+abnb.df$price_range <- as.factor(abnb.df$price_range)
+abnb.df$Seasons <- as.factor(abnb.df$Seasons)
+abnb.df
+```
+
+```{r}
+#training/validation data
+train.rows <- sample(rownames(abnb.df),dim(abnb.df)[1]*0.6)
+#collect all the columns with row id into training set:
+train.data <- abnb.df[train.rows, ]
+valid.rows <- setdiff(rownames(abnb.df), train.rows) 
+valid.data <- abnb.df[valid.rows, ]
+```
+
+##trying to predict the most popular property type here
+the first thing is to seed now:
+```{r}
+#use the set.seed in order to use the partitions when re-running the code
+set.seed(1)
+#NaiveBayes applied on Training Dataset
+property.nb <- naiveBayes( property_type ~ price_range + room_type  + number_of_reviews + smart_location + zipcode  + host_is_superhost + host_since + neighbourhood, data = train.data)
+property.nb
+#Training
+pre.class1 <- predict(property.nb, newdata = train.data)
+A <- confusionMatrix(pre.class1,train.data$property_type)
+Accuracy_train <- A$overall["Accuracy"]
+Accuracy_train
+
+#Validation
+pre.class2 <- predict(property.nb, newdata = valid.data)
+A <- confusionMatrix(pre.class2,valid.data$property_type)
+Accuracy_valid <- A$overall["Accuracy"]
+Accuracy_valid
+pander(cbind(Accuracy_train,Accuracy_valid))
+```
+
+```{r}
+#Show number of popular properties 
+summary(train.data$property_type)
+summary(valid.data$property_type)
+```
+
+
+##trying to predict the most popular room type here - as per our sponsor suggestion
+the first thing is to seed now:
+```{r}
+#use the set.seed in order to use the partitions when re-running the code
+set.seed(1)
+#NaiveBayes applied on Training Dataset
+roomtype.nb <- naiveBayes( room_type ~ price_range + number_of_reviews + zipcode + host_since + neighbourhood, data = train.data)
+roomtype.nb
+#Training
+pre.class1 <- predict(roomtype.nb, newdata = train.data)
+A <- confusionMatrix(pre.class1,train.data$room_type)
+Accuracy_train <- A$overall["Accuracy"]
+Accuracy_train
+
+#Validation
+pre.class2 <- predict(roomtype.nb, newdata = valid.data)
+A <- confusionMatrix(pre.class2,valid.data$room_type)
+Accuracy_valid <- A$overall["Accuracy"]
+Accuracy_valid
+pander(cbind(Accuracy_train,Accuracy_valid))
+```
+
+
+```{r}
+#Show number of popular room types 
+summary(train.data$room_type)
+summary(valid.data$room_type)
+```
+
+##trying to predict the most preferred host type here
+the first thing is to seed now:
+```{r}
+#use the set.seed in order to use the partitions when re-running the code
+set.seed(1)
+#NaiveBayes applied on Training Dataset
+property.nb <- naiveBayes( host_is_superhost ~ host_total_listings_count + host_identity_verified  + review_scores_rating + host_since + review_scores_cleanliness + review_scores_accuracy + reviews_per_month + cancellation_policy + price + zipcode, data = train.data)
+property.nb
+#Training
+pre.class1 <- predict(property.nb, newdata = train.data)
+A <- confusionMatrix(pre.class1,train.data$host_is_superhost)
+Accuracy_train <- A$overall["Accuracy"]
+Accuracy_train
+
+#Validation
+pre.class2 <- predict(property.nb, newdata = valid.data)
+A <- confusionMatrix(pre.class2,valid.data$host_is_superhost)
+Accuracy_valid <- A$overall["Accuracy"]
+Accuracy_valid
+pander(cbind(Accuracy_train,Accuracy_valid))
+```
+
+```{r}
+#Show number of popular room types 
+summary(train.data$host_is_superhost)
+summary(valid.data$host_is_superhost)
+```
+
+##trying to predict the most preferred price range here
+the first thing is to seed now:
+```{r}
+#use the set.seed in order to use the partitions when re-running the code
+set.seed(1)
+#NaiveBayes applied on Training Dataset
+
+
+pricerange.nb <- naiveBayes(price_range ~  neighbourhood  + smart_location  + property_type + room_type + accommodates + bathrooms + bedrooms + zipcode + beds + reviews_per_month + cleaning_fee + monthly_price + weekly_price + host_since, data = train.data)
+pricerange.nb
+#Training
+pre.class1 <- predict(pricerange.nb, newdata = train.data)
+A <- confusionMatrix(pre.class1,train.data$price_range)
+Accuracy_train <- A$overall["Accuracy"]
+Accuracy_train
+
+#Validation
+pre.class2 <- predict(pricerange.nb, newdata = valid.data)
+A <- confusionMatrix(pre.class2,valid.data$price_range)
+Accuracy_valid <- A$overall["Accuracy"]
+Accuracy_valid
+pander(cbind(Accuracy_train,Accuracy_valid))
+```
+
+```{r}
+#Show number of popular room types 
+summary(train.data$price_range)
+summary(valid.data$price_range)
+```
+
+##trying to predict the most preferred Seasons here
+the first thing is to seed now:
+```{r}
+#use the set.seed in order to use the partitions when re-running the code
+set.seed(1)
+#NaiveBayes applied on Training Dataset
+
+
+seasons.nb <- naiveBayes(Seasons ~  price_range + property_type  + number_of_reviews  + neighbourhood , data = train.data)
+seasons.nb
+#Training
+pre.class1 <- predict(seasons.nb, newdata = train.data)
+A <- confusionMatrix(pre.class1,train.data$Seasons)
+Accuracy_train <- A$overall["Accuracy"]
+Accuracy_train
+
+#Validation
+pre.class2 <- predict(seasons.nb, newdata = valid.data)
+A <- confusionMatrix(pre.class2,valid.data$Seasons)
+Accuracy_valid <- A$overall["Accuracy"]
+Accuracy_valid
+pander(cbind(Accuracy_train,Accuracy_valid))
+```
+
+```{r}
+#Show number of popular room types 
+plot(pre.class2)
+summary(train.data$Seasons)
+summary(valid.data$Seasons)
+```
+
+
+## state
+```{r}
+#use the set.seed in order to use the partitions when re-running the code
+set.seed(1)
+#NaiveBayes applied on Training Dataset
+
+
+seasons.nb <- naiveBayes(state ~  price_range + property_type  + number_of_reviews  + neighbourhood , data = train.data)
+seasons.nb
+#Training
+pre.class1 <- predict(seasons.nb, newdata = train.data)
+A <- confusionMatrix(pre.class1,train.data$state)
+Accuracy_train <- A$overall["Accuracy"]
+Accuracy_train
+
+#Validation
+pre.class2 <- predict(seasons.nb, newdata = valid.data)
+A <- confusionMatrix(pre.class2,valid.data$state)
+Accuracy_valid <- A$overall["Accuracy"]
+Accuracy_valid
+pander(cbind(Accuracy_train,Accuracy_valid))
+```
+
+```{r}
+#Show number of popular room types 
+plot(pre.class2)
+summary(train.data$Seasons)
+summary(valid.data$Seasons)
+```

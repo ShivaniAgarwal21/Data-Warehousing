@@ -1,0 +1,384 @@
+---
+title: "Neural Network"
+author: "Chaitali Sawant, Harshita Gadiraju and Shivani Agarwal"
+date: "2/29/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(neuralnet)
+library(nnet)
+library(caret)
+library(e1071)
+abnb.df <- read.csv("/Users/shivani/Documents/Data Warehousing/Project/Final Project/dataset/Final/Neural Network/Neural_Net_v1.csv")
+```
+
+
+```{r}
+
+vars=c("host_total_listings_count", "host_identity_verified", "cancellation_policy","number_of_reviews","neighbourhood","review_scores_accuracy","price_range")
+```
+
+```{r}
+# partition the data
+set.seed(9999)
+training=sample(row.names(abnb.df), dim(abnb.df)[1]*0.6)
+validation=setdiff(row.names(abnb.df), training)
+```
+
+```{r}
+# when y has multiple classes - need to dummify
+trainData <- cbind(abnb.df[training,c(vars)],class.ind(abnb.df[training,]$host_is_superhost))
+
+names(trainData)=c(vars, paste("host_is_superhost", c(0,1), sep="")) 
+
+validData <- cbind(abnb.df[validation,c(vars)],
+class.ind(abnb.df[validation,]$host_is_superhost))
+
+names(validData)=c(vars,paste("host_is_superhost", c(0,1), sep="")) 
+
+trainData
+```
+
+```{r}
+# run nn with 2 hidden nodes
+# use hidden= with a vector of integers specifying number of hidden nodes in each layer
+nn <- neuralnet(host_is_superhost0 + host_is_superhost1  ~ host_total_listings_count + host_identity_verified  + cancellation_policy + number_of_reviews + neighbourhood + price_range + review_scores_accuracy,  data = trainData, hidden = 4, threshold = 0.1, linear.output = FALSE)
+nn$result.matrix
+nn$weights
+plot(nn)
+```
+
+
+```{r}
+training.prediction <- compute(nn, trainData[,-c(5:6)]) 
+training.class <- apply(training.prediction$net.result,1,which.max)-1 
+training.class <- factor(training.class)
+price.df.max <- factor(abnb.df[training,]$host_is_superhost)
+confusionMatrix(training.class, price.df.max)
+plot(price.df.max)
+```
+
+###Test data
+
+```{r}
+# run nn with 2 hidden nodes
+# use hidden= with a vector of integers specifying number of hidden nodes in each layer
+nn <- neuralnet(host_is_superhost0 + host_is_superhost1  ~ host_total_listings_count + host_identity_verified  + cancellation_policy + number_of_reviews + neighbourhood + price_range + review_scores_accuracy,  data = validData, hidden = 4, threshold = 0.1, linear.output = FALSE)
+nn$result.matrix
+nn$weights
+plot(nn)
+```
+
+```{r}
+testing.prediction <- compute(nn, validData[,-c(5:6)]) 
+testing.class <- apply(testing.prediction$net.result,1,which.max)-1 
+testing.class <- factor(testing.class)
+price.df.max1 <- factor(abnb.df[validation,]$host_is_superhost)
+confusionMatrix(testing.class, price.df.max1)
+plot(price.df.max1)
+```
+
+```{r}
+#Show number of popular host 
+summary(price.df.max)
+summary(price.df.max1)
+```
+
+
+
+# Most popular property type
+```{r}
+abnb.df$property_type <- as.factor(abnb.df$property_type)
+vars_property=c("price_range", "room_type" , "number_of_reviews" , "smart_location" , "zipcode"  , "host_is_superhost" , "host_since" , "neighbourhood")
+```
+
+```{r}
+# partition the data
+set.seed(9999)
+training=sample(row.names(abnb.df), dim(abnb.df)[1]*0.6)
+validation=setdiff(row.names(abnb.df), training)
+```
+
+```{r}
+trainData <- cbind(abnb.df[training,c(vars_property)],class.ind(abnb.df[training,]$property_type))
+
+names(trainData)=c(vars_property, paste("property_type", c(1,8), sep="")) 
+
+validData <- cbind(abnb.df[validation,c(vars_property)],
+class.ind(abnb.df[validation,]$property_type))
+
+names(validData)=c(vars_property,paste("property_type", c(1,8), sep="")) 
+
+trainData
+```
+
+
+```{r}
+# run nn with 2 hidden nodes
+# use hidden= with a vector of integers specifying number of hidden nodes in each layer
+nn <- neuralnet(property_type1 + property_type8 ~ price_range + room_type  + number_of_reviews + smart_location + zipcode + host_is_superhost + neighbourhood,  data = trainData, hidden = 5, threshold = 0.1, linear.output = FALSE)
+nn$result.matrix
+nn$weights
+plot(nn)
+```
+
+```{r}
+training.prediction <- compute(nn, trainData[,-c(12:13)]) 
+training.class <- apply(training.prediction$net.result,1,which.max) 
+training.class <- factor(training.class)
+price.df.max <- factor(abnb.df[training,]$property_type)
+confusionMatrix(training.class, price.df.max)
+plot(price.df.max)
+```
+
+###Test data
+
+```{r}
+# run nn with 2 hidden nodes
+# use hidden= with a vector of integers specifying number of hidden nodes in each layer
+nn <- neuralnet(property_type1 + property_type8 ~ price_range + room_type  + number_of_reviews + smart_location + zipcode + host_is_superhost + neighbourhood,  data = validData, hidden = 4, threshold = 0.1, linear.output = FALSE)
+nn$result.matrix
+nn$weights
+plot(nn)
+```
+
+```{r}
+testing.prediction <- compute(nn, validData[,-c(12:13)]) 
+testing.class <- apply(testing.prediction$net.result,1,which.max) 
+testing.class <- factor(testing.class)
+price.df.max1 <- factor(abnb.df[validation,]$property_type)
+confusionMatrix(testing.class, price.df.max1)
+plot(price.df.max1)
+```
+
+```{r}
+#Show number of popular host 
+summary(price.df.max)
+summary(price.df.max1)
+```
+
+
+
+#Room type
+```{r}
+abnb.df$room_type <- as.factor(abnb.df$room_type)
+vars=c("price_range", "neighbourhood" , "number_of_reviews"  , "zipcode" , "neighbourhood","host_since")
+```
+
+```{r}
+# partition the data
+set.seed(9999)
+training=sample(row.names(abnb.df), dim(abnb.df)[1]*0.6)
+validation=setdiff(row.names(abnb.df), training)
+```
+
+```{r}
+trainData <- cbind(abnb.df[training,c(vars)],class.ind(abnb.df[training,]$room_type))
+
+names(trainData)=c(vars, paste("room_type", c(1,2,3), sep="")) 
+
+validData <- cbind(abnb.df[validation,c(vars)],
+class.ind(abnb.df[validation,]$room_type))
+
+names(validData)=c(vars,paste("room_type", c(1,2,3), sep="")) 
+
+trainData
+```
+
+
+```{r}
+# run nn with 2 hidden nodes
+# use hidden= with a vector of integers specifying number of hidden nodes in each layer
+nn <- neuralnet(room_type1 + room_type2 + room_type3 ~ price_range + number_of_reviews + zipcode  + neighbourhood,  data = trainData, hidden = 3, threshold = 0.1, linear.output = FALSE)
+nn$result.matrix
+nn$weights
+plot(nn)
+```
+
+
+```{r}
+training.prediction <- compute(nn, trainData[,-c(11:13)]) 
+training.class <- apply(training.prediction$net.result,1,which.max) 
+training.class <- as.factor(training.class)
+price.df.max <- as.factor(abnb.df[training,]$room_type)
+confusionMatrix(training.class, price.df.max)
+plot(price.df.max)
+```
+
+###Test data
+
+```{r}
+# run nn with 2 hidden nodes
+# use hidden= with a vector of integers specifying number of hidden nodes in each layer
+nn <- neuralnet(room_type1 + room_type2 + room_type3 ~ price_range + number_of_reviews + zipcode  + neighbourhood,  data = validData, hidden = 4, threshold = 0.1, linear.output = FALSE)
+nn$result.matrix
+nn$weights
+plot(nn)
+```
+
+```{r}
+testing.prediction <- compute(nn, validData[,-c(11:13)]) 
+testing.class <- apply(testing.prediction$net.result,1,which.max) 
+testing.class <- factor(testing.class)
+price.df.max1 <- factor(abnb.df[validation,]$room_type)
+confusionMatrix(testing.class, price.df.max1)
+plot(price.df.max1)
+```
+
+```{r}
+#Show number of popular host 
+summary(price.df.max)
+summary(price.df.max1)
+```
+
+
+#trying to predict the price
+```{r}
+#abnb.df$price_range <- as.factor(abnb.df$price_range)
+vars = c("neighbourhood" , "reviews_per_month" , "smart_location" , "property_type","room_type","accommodates", "bathrooms","bedrooms","beds","cleaning_fee","weekly_price","monthly_price")
+```
+
+```{r}
+# partition the data
+set.seed(9999)
+training=sample(row.names(abnb.df), dim(abnb.df)[1]*0.6)
+validation=setdiff(row.names(abnb.df), training)
+```
+
+```{r}
+trainData <- cbind(abnb.df[training,c(vars)],class.ind(abnb.df[training,]$price_range))
+
+names(trainData)=c(vars, paste("price_range", c(1,2,3,4,5,6), sep="")) 
+
+validData <- cbind(abnb.df[validation,c(vars)],
+class.ind(abnb.df[validation,]$price_range))
+
+names(validData)=c(vars,paste("price_range", c(1,2,3,4,5,6), sep="")) 
+
+trainData
+```
+
+
+```{r}
+# run nn with 2 hidden nodes
+# use hidden= with a vector of integers specifying number of hidden nodes in each layer
+head(abnb.df)
+nn <- neuralnet(price_range1 + price_range2 + price_range3 + price_range4 + price_range5 + price_range6 ~ neighbourhood  + smart_location  + property_type + room_type + accommodates + bathrooms + bedrooms + beds + reviews_per_month + cleaning_fee + monthly_price + weekly_price,  data = trainData, hidden = 4, threshold = 0.1, linear.output = FALSE)
+nn$result.matrix
+nn$weights
+plot(nn)
+```
+
+
+```{r}
+training.prediction <- compute(nn, trainData[,-c(18:23)]) 
+training.class <- apply(training.prediction$net.result,1,which.max) 
+training.class <- factor(training.class)
+price.df.max <- factor(abnb.df[training,]$price_range)
+confusionMatrix(training.class, price.df.max)
+
+```
+
+###Test data
+
+```{r}
+# run nn with 2 hidden nodes
+# use hidden= with a vector of integers specifying number of hidden nodes in each layer
+nn <- neuralnet(price_range1 + price_range2 + price_range3 + price_range4 + price_range5 + price_range6 ~  neighbourhood  + smart_location  + property_type + room_type + accommodates + bathrooms + bedrooms + beds + reviews_per_month + cleaning_fee + monthly_price + weekly_price,  data = validData, hidden = 4, threshold = 0.1, linear.output = FALSE)
+nn$result.matrix
+nn$weights
+plot(nn)
+```
+
+```{r}
+testing.prediction <- compute(nn, validData[,-c(18:23)]) 
+testing.class <- apply(testing.prediction$net.result,1,which.max)
+testing.class <- factor(testing.class)
+price.df.max1 <- factor(abnb.df[validation,]$price_range)
+confusionMatrix(testing.class, price.df.max1)
+
+```
+
+```{r}
+#Show number of popular host 
+summary(price.df.max)
+summary(price.df.max1)
+```
+
+#Predicting the seasons most visited
+```{r}
+abnb.df$Seasons <- as.factor(abnb.df$Seasons)
+vars = c("price_range","property_type","number_of_reviews","neighbourhood")
+```
+
+```{r}
+# partition the data
+set.seed(9999)
+training=sample(row.names(abnb.df), dim(abnb.df)[1]*0.6)
+validation=setdiff(row.names(abnb.df), training)
+```
+
+```{r}
+trainData <- cbind(abnb.df[training,c(vars)],  class.ind(abnb.df[training,]$Seasons))
+
+names(trainData)=c(vars, paste("Seasons", c(1,2,3,4), sep="")) 
+
+validData <- cbind(abnb.df[validation,c(vars)],
+class.ind(abnb.df[validation,]$Seasons))
+
+names(validData)=c(vars,paste("Seasons", c(1,2,3,4), sep="")) 
+
+trainData
+```
+
+
+```{r}
+# run nn with 2 hidden nodes
+# use hidden= with a vector of integers specifying number of hidden nodes in each layer
+head(abnb.df)
+nn <- neuralnet(Seasons1 + Seasons2 + Seasons3 + Seasons4 ~ price_range + property_type + number_of_reviews + neighbourhood,  data = trainData, hidden = 3, threshold = 0.1, linear.output = FALSE)
+nn$result.matrix
+nn$weights
+plot(nn)
+```
+
+
+```{r}
+training.prediction <- compute(nn, trainData[,-c(6:9)]) 
+training.class <- apply(training.prediction$net.result,1,which.max)-1
+training.class <- factor(training.class)
+price.df.max <- factor(abnb.df[training,]$Seasons)
+confusionMatrix(training.class, price.df.max)
+plot(price.df.max)
+```
+
+###Test data
+
+```{r}
+# run nn with 2 hidden nodes
+# use hidden= with a vector of integers specifying number of hidden nodes in each layer
+nn <- neuralnet(Seasons1 + Seasons2 + Seasons3 + Seasons4 ~ price_range + property_type + number_of_reviews + neighbourhood,  data = validData, hidden = 4, threshold = 0.1, linear.output = FALSE)
+nn$result.matrix
+nn$weights
+plot(nn)
+```
+
+```{r}
+testing.prediction <- compute(nn, validData[,-c(6:9)]) 
+testing.class <- apply(testing.prediction$net.result,1,which.max)-1
+testing.class <- factor(testing.class)
+price.df.max1 <- factor(abnb.df[validation,]$Seasons)
+confusionMatrix(testing.class, price.df.max1)
+plot(price.df.max1)
+```
+
+```{r}
+#Show number of popular host 
+summary(price.df.max)
+summary(price.df.max1)
+```

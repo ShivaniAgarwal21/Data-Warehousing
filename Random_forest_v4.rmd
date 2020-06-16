@@ -1,0 +1,516 @@
+---
+title: "Random Forest and Linear Regression"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(pander)
+```
+
+## R Markdown
+
+```{r}
+library(caret)
+data = read.csv("/Users/shivani/Documents/Data Warehousing/Project/Final Project/dataset/Random Forest/Random_Forest.csv", header=T)
+data$zipcode <- as.numeric(data$zipcode)
+data$host_since <- as.numeric(data$host_since)
+#data$smart_location <- as.factor(data$smart_location)
+percent_train   <- 2/3
+percent_train
+train_start     <- 1
+train_end       <- as.integer(nrow(data) * percent_train)
+
+test_start      <- train_end + 1
+test_end        <- nrow(data)
+
+train        <- data[train_start:train_end,]
+test         <- data[test_start:test_end,]
+str(data)
+dim(train)
+dim(test)
+nrow(train)
+nrow(test)
+```
+
+```{r}
+# Find the mean property_type in the training set
+mean <- mean(train$property_type)
+
+# Find the max property_type in the training set
+max <- max(train$property_type)
+
+pander(cbind(mean, max))
+```
+
+```{r}
+# Tabulate the number of listings for each property_type
+z = table(train$property_type)
+z
+```
+```{r}
+tapply(train$property_type,train$price,mean)
+```
+
+```{r}
+# Baseline model prediction
+baseline = mean(train$host_is_superhost)
+baseline
+```
+
+
+```{r Room_type}
+# Linear regression model
+lreg1 = lm(room_type~  price + property_type  + bathrooms + accommodates + bedrooms + beds, data = train)
+summary(lreg1)
+```
+
+```{r host_is_superhost}
+# Linear regression model
+lreg1 = lm(host_is_superhost~  host_total_listings_count + host_identity_verified + is_location_exact + instant_bookable + cancellation_policy, data = train)
+summary(lreg1)
+```
+
+```{r}
+
+host_total_listings_count <- cor(train$host_is_superhost, train$host_total_listings_count)
+host_identity_verified <- cor(train$host_is_superhost, train$host_identity_verified)
+is_location_exact <- cor(train$host_is_superhost, train$is_location_exact)
+instant_bookable <- cor(train$host_is_superhost, train$instant_bookable)
+cancellation_policy <- cor(train$host_is_superhost, train$cancellation_policy)
+price <- cor(train$host_is_superhost, train$price)
+pander(cbind(price,cancellation_policy,instant_bookable,is_location_exact,host_identity_verified,host_total_listings_count))
+```
+
+
+```{r}
+# Make predictions using the linear regression model on the test set
+predTest = predict(lreg1, newdata = train, type = "response")
+range(predTest)
+table(train$host_is_superhost, predTest>0.9)
+# SSE
+SSE = sum((predTest - train$host_is_superhost)^2)
+
+# RMSE
+RMSE = sqrt(mean((predTest - train$host_is_superhost)^2))
+
+# Baseline
+baseline = mean(train$host_is_superhost)
+
+# SSE of baseline model on testing set
+SSEb = sum((baseline - train$host_is_superhost)^2)
+
+Rsquared = 1 - SSE/SSEb
+
+accuracy <- (180+752)/(180+752+23+1265)
+
+pander(cbind(accuracy,SSE,RMSE,baseline,SSEb,Rsquared))
+```
+  
+```{r}
+
+cor(train$property_type, train$number_of_reviews)
+```
+
+##CART and Random Forest
+```{r}
+library(rpart)
+library(rpart.plot)
+CARTmodel1 = rpart(host_is_superhost ~  host_total_listings_count + host_identity_verified + is_location_exact + instant_bookable + cancellation_policy, data = train, cp =0.001)
+prp(CARTmodel1)
+```
+
+```{r}
+# Make predictions
+predTest = predict(CARTmodel1, newdata = train)
+# SSE
+SSE = sum((predTest - test$host_is_superhost)^2)
+SSE
+
+# RMSE
+RMSE = sqrt(mean((predTest - test$host_is_superhost)^2))
+RMSE
+
+# Baseline
+baseline = mean(train$host_is_superhost)
+baseline
+
+# SSE of baseline model on testing set
+SSEb = sum((baseline - test$host_is_superhost)^2)
+SSEb
+
+# R^2
+Rsquared = 1 - SSE/SSEb
+Rsquared
+pander(cbind(SSE,RMSE,baseline,SSEb,Rsquared))
+```
+##Create a random forest model that predicts log(price) using the same variables as the CART model, with nodesize = 20 and ntree = 200. Set the random seed to 1.
+
+###Property type
+```{r }
+
+library(randomForest)
+library(pander)
+library(caret)
+set.seed(50)
+
+data = read.csv("/Users/shivani/Documents/Data Warehousing/Project/Final Project/dataset/Random Forest/Random_Forest.csv", header=T)
+data = subset(data, data$property_type != 11) 
+
+
+samplesize = 0.60 * nrow(data)
+index = sample( seq_len ( nrow ( data ) ), size = samplesize )
+ 
+
+# Create training and test set
+datatrain = data[ index, ]
+datatest = data[ -index, ]
+#write.csv(datatest,"C:/Users/vnpse/Desktop/My projects/Data warehousing/Airbnb/test.csv")
+#write.csv(datatrain,"C:/Users/vnpse/Desktop/My projects/Data warehousing/Airbnb/train.csv")
+
+```
+
+```{r}
+#Train the data with RF algorithm
+rf = randomForest(formula = as.factor(property_type) ~  price_range + room_type  + number_of_reviews + smart_location + host_is_superhost + neighbourhood, data=datatrain, ntree=500, mtry=1.9, importance = TRUE, type = "response",proximity=T)
+
+rf
+
+predTrain = predict(rf,newdata = datatrain, type = "response")
+pander(summary(predTrain)) #summary of predtest
+
+#Test the model
+
+rf1 = randomForest(formula = as.factor(property_type) ~  price_range + room_type  + number_of_reviews + smart_location + host_is_superhost  + neighbourhood, data=datatest, ntree=500, mtry=1.9, importance = TRUE, type = "response",proximity=T)
+
+rf1
+
+predTest = predict(rf1,newdata = datatest, type = "response")
+pander(summary(predTest)) #summary of predtest
+table(predTest, datatest$property_type)
+
+```
+
+```{r property type accuracy}
+# accuracy in oob is 1- Error Rate 
+#Training data
+a_train <- 1 - .2674
+#Training data
+a_test <- 1 - .2712
+pander(cbind(a_train,a_test))
+```
+
+```{r}
+varImpPlot(rf)
+varImpPlot(rf1)
+```
+
+## Predicting Price
+
+```{r correlation between all reviews ratings}
+cor(datatrain$price_range, datatrain$number_of_reviews)
+cor(datatrain$price_range, datatrain$review_scores_rating)
+cor(datatrain$price_range, datatrain$review_scores_accuracy)
+cor(datatrain$price_range, datatrain$review_scores_cleanliness)
+cor(datatrain$price_range, datatrain$reviews_per_month)
+```
+
+```{r correlation between all price attributes}
+cor(datatrain$price_range, datatrain$weekly_price)
+cor(datatrain$price_range, datatrain$monthly_price)
+cor(datatrain$price_range, datatrain$security_deposit)
+cor(datatrain$price_range, datatrain$cleaning_fee)
+cor(datatrain$price_range, datatrain$extra_people) 
+cor(datatrain$price_range, datatrain$guests_included)
+```
+
+###From above corelation table we can clearly see that higher correlation is for Reviews per month and thats why we included only that in our attributes for predicticing our model
+
+```{r}
+rf = randomForest(formula = as.factor(price_range) ~  neighbourhood + property_type + zipcode + smart_location + room_type + accommodates + bathrooms + bedrooms + beds + reviews_per_month + cleaning_fee + monthly_price + weekly_price, data=datatrain, ntree=500, mtry=1.9, importance = TRUE, type = "response",proximity=T)
+
+
+#guests_included
+rf
+
+predTrain = predict(rf,newdata = datatrain, type = "response")
+pander(summary(predTrain)) #summary of predtest
+
+rf1 = randomForest(formula = as.factor(price_range) ~  neighbourhood + property_type + zipcode + smart_location + room_type + accommodates + bathrooms + bedrooms + beds + reviews_per_month + cleaning_fee + monthly_price + weekly_price, data=datatest, ntree=500, mtry=1.9, importance = TRUE, type = "response",proximity=T)
+
+rf1
+
+predTest = predict(rf1,newdata = datatest, type = "response")
+pander(summary(predTest)) #summary of predtest
+table(predTest, datatest$price_range)
+```
+###This is the accuracy before adding reviews per month
+```{r  Price Range accuracy}
+# accuracy in oob is 1- Error Rate 
+#Training data
+a_train <- 1 - .2746
+#Training data
+a_test <- 1 - .2918
+pander(cbind(a_train,a_test))
+```
+###This is the accuracy after adding reviews per month as per our business sponsor
+```{r  Price Range accuracy}
+# accuracy in oob is 1- Error Rate 
+#Training data
+a_train <- 1 - .2705
+#Training data
+a_test <- 1 - .2804
+pander(cbind(a_train,a_test))
+```
+
+###This is the accuracy after adding cleaning_fee, as suggested by our business sponsor
+```{r  Price Range accuracy}
+# accuracy in oob is 1- Error Rate 
+#Training data
+a_train <- 1 - .2618
+#Training data
+a_test <- 1 - .2712
+pander(cbind(a_train,a_test))
+```
+
+###This is the accuracy after adding monthly_price, as suggested by our business sponsor and due to second highest corelation found with price
+```{r  Price Range accuracy}
+# accuracy in oob is 1- Error Rate 
+#Training data
+a_train <- 1 - .2282
+#Training data
+a_test <- 1 - .2391
+pander(cbind(a_train,a_test))
+```
+
+
+###This is the accuracy after adding weekly_price, as suggested by our business sponsor and due to second highest corelation found with price
+```{r  Price Range accuracy}
+# accuracy in oob is 1- Error Rate 
+#Training data
+a_train <- 1 - .1934
+#Training data
+a_test <- 1 - .2112
+pander(cbind(a_train,a_test))
+```
+
+```{r}
+varImpPlot(rf)
+varImpPlot(rf1)
+```
+
+###We also tried adding security_deposit, extra_people and guests_included but after adding these attributes accuracy decreases. Therefore not including in our model
+
+## Host is Superhost
+
+```{r }
+
+library(randomForest)
+library(pander)
+library(caret)
+set.seed(50)
+
+data = read.csv("/Users/shivani/Documents/Data Warehousing/Project/Final Project/dataset/Random Forest/Random_Forest.csv", header=T)
+#Goal is aiming at weekend analysis thus two days data is approximated
+#data = subset(data, data$minimum_nights==2||data$minimum_nights==7)
+data = subset(data, data$property_type != 11) 
+
+
+samplesize = 0.60 * nrow(data)
+index = sample( seq_len ( nrow ( data ) ), size = samplesize )
+ 
+
+# Create training and test set
+datatrain = data[ index, ]
+datatest = data[ -index, ]
+#write.csv(datatest,"C:/Users/vnpse/Desktop/My projects/Data warehousing/Airbnb/test.csv")
+#write.csv(datatrain,"C:/Users/vnpse/Desktop/My projects/Data warehousing/Airbnb/train.csv")
+data
+```
+
+```{r correlation between all price attributes}
+cor(datatrain$host_is_superhost, datatrain$host_since_year)
+cor(datatrain$host_is_superhost, datatrain$review_scores_rating)
+cor(datatrain$host_is_superhost, datatrain$review_scores_accuracy)
+cor(datatrain$host_is_superhost, datatrain$review_scores_cleanliness)
+cor(datatrain$host_is_superhost, datatrain$instant_bookable) 
+cor(datatrain$host_is_superhost, datatrain$cancellation_policy)
+cor(datatrain$host_is_superhost, datatrain$reviews_per_month) 
+```
+
+
+```{r}
+s_train <- (dim(datatrain)- sum( datatrain$host_is_superhost))
+s_test  <- (dim(datatest) - sum (datatest$host_is_superhost))
+pander(cbind(s_train,s_test))
+rf = randomForest(formula = as.factor(host_is_superhost) ~ host_total_listings_count + price_range + host_identity_verified + number_of_reviews + review_scores_rating + cancellation_policy, data=datatrain, ntree=500, importance = TRUE, type = "response")
+
+
+#guests_included
+rf
+
+predTrain = predict(rf,newdata = datatrain, type = "response")
+pander(summary(predTrain)) #summary of predtest
+
+rf1 = randomForest(formula = as.factor(host_is_superhost) ~  host_total_listings_count + price_range + host_identity_verified + number_of_reviews + review_scores_rating + cancellation_policy, data=datatest, ntree=500,importance = TRUE, type = "response")
+
+rf1
+
+predTest = predict(rf1,newdata = datatest, type = "response")
+pander(summary(predTest)) #summary of predtest
+table(predTest, datatest$host_is_superhost)
+```
+
+
+```{r  Superhost accuracy}
+# accuracy in oob is 1- Error Rate 
+#Training data
+a_train <- 1 - .1044
+#Training data
+a_test <- 1 - .0863
+pander(cbind(a_train,a_test))
+```
+###After adding review_scores_rating as suggested by our business sponsor
+```{r  Superhost accuracy}
+# accuracy in oob is 1- Error Rate 
+#Training data
+a_train <- 1 - .0805
+#Training data
+a_test <- 1 - .0802
+pander(cbind(a_train,a_test))
+```
+
+```{r}
+varImpPlot(rf)
+varImpPlot(rf1)
+```
+
+
+## Room_type
+```{r }
+
+library(randomForest)
+library(pander)
+library(caret)
+set.seed(50)
+
+data = read.csv("/Users/shivani/Documents/Data Warehousing/Project/Final Project/dataset/Random Forest/Random_Forest.csv", header=T)
+#data = subset(data, data$property_type != 11) 
+
+
+samplesize = 0.60 * nrow(data)
+index = sample( seq_len ( nrow ( data ) ), size = samplesize )
+ 
+
+# Create training and test set
+datatrain = data[ index, ]
+datatest = data[ -index, ]
+#write.csv(datatest,"C:/Users/vnpse/Desktop/My projects/Data warehousing/Airbnb/test.csv")
+#write.csv(datatrain,"C:/Users/vnpse/Desktop/My projects/Data warehousing/Airbnb/train.csv")
+
+```
+
+
+
+```{r}
+#Train the data with RF algorithm
+rf = randomForest(formula = as.factor(room_type) ~  price_range + number_of_reviews + host_is_superhost  + neighbourhood, data=datatrain, ntree=500, mtry=1.9, importance = TRUE, type = "response",proximity=T)
+
+rf
+
+predTrain = predict(rf,newdata = datatrain, type = "response")
+pander(summary(predTrain)) #summary of predtest
+
+#Test the model
+
+rf1 = randomForest(formula = as.factor(room_type) ~  price_range + number_of_reviews + host_is_superhost  + neighbourhood, data=datatest, ntree=500, mtry=1.9, importance = TRUE, type = "response",proximity=T)
+
+rf1
+
+predTest = predict(rf1,newdata = datatest, type = "response")
+pander(summary(predTest)) #summary of predtest
+table(predTest, datatest$room_type)
+
+```
+
+```{r  Superhost accuracy}
+# accuracy in oob is 1- Error Rate 
+#Training data
+a_train <- 1 - .3008
+#Training data
+a_test <- 1 - .2899
+pander(cbind(a_train,a_test))
+```
+
+```{r}
+varImpPlot(rf)
+varImpPlot(rf1)
+```
+
+
+### which seasons are having most visitors?
+
+```{r }
+
+library(randomForest)
+library(pander)
+library(caret)
+set.seed(50)
+
+data = read.csv("/Users/shivani/Documents/Data Warehousing/Project/Final Project/dataset/Random Forest/Random_Forest.csv", header=T)
+#data = subset(data, data$property_type != 11) 
+
+
+samplesize = 0.60 * nrow(data)
+index = sample( seq_len ( nrow ( data ) ), size = samplesize )
+ 
+
+# Create training and test set
+datatrain = data[ index, ]
+datatest = data[ -index, ]
+#write.csv(datatest,"C:/Users/vnpse/Desktop/My projects/Data warehousing/Airbnb/test.csv")
+#write.csv(datatrain,"C:/Users/vnpse/Desktop/My projects/Data warehousing/Airbnb/train.csv")
+
+```
+
+```{r}
+#Train the data with RF algorithm
+rf = randomForest(formula = as.factor(Seasons) ~  price_range + number_of_reviews + property_type + neighbourhood, data=datatrain, ntree=500, mtry=1.9, importance = TRUE, type = "response",proximity=T)
+
+rf
+
+predTrain = predict(rf,newdata = datatrain, type = "response")
+pander(summary(predTrain)) #summary of predtest
+
+#Test the model
+
+rf1 = randomForest(formula = as.factor(Seasons) ~  price_range + number_of_reviews + property_type + neighbourhood, data=datatest, ntree=500, mtry=1.9, importance = TRUE, type = "response",proximity=T)
+
+rf1
+
+predTest = predict(rf1,newdata = datatest, type = "response")
+pander(summary(predTest)) #summary of predtest
+table(predTest, datatest$Seasons)
+
+```
+
+
+```{r  Season accuracy}
+# accuracy in oob is 1- Error Rate 
+#Training data
+a_train <- 1 - .3635
+#Training data
+a_test <- 1 - .4105
+pander(cbind(a_train,a_test))
+```
+
+
+```{r}
+varImpPlot(rf)
+varImpPlot(rf1)
+```
+-MeanDecreaseAccuracy: gives a rough estimate of the loss in prediction performance when that particular variable is omitted from the training set. Caveat: if two variables are somewhat redundant, then omitting one of them may not lead to massive gains in prediction performance, but would make the second variable more important.
+
+-MeanDecreaseGini: GINI is a measure of node impurity. Think of it like this, if you use this feature to split the data, how pure will the nodes be? Highest purity means that each node contains only elements of a single class. Assessing the decrease in GINI when that feature is omitted leads to an understanding of how important that feature is to split the data correctly.
+
+

@@ -1,0 +1,398 @@
+---
+title: "KNN"
+author: "Chaitali Sawant, Harshita Gadiraju and Shivani Agarwal"
+date: "3/1/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+library(e1071)
+library(caret)
+library(gains)
+library(pander)
+library(FNN)
+library(neuralnet)
+library(nnet)
+library(sqldf)
+```
+
+##KNN
+
+
+###Predicting if host_is_superhost is important for being airbnb host or not?
+```{r}
+library(class)
+knn <- read.csv("/Users/shivani/Documents/Data Warehousing/Project/Final Project/dataset/KNN/knn.csv")
+
+knn.subset<-knn[c('host_is_superhost', 'host_identity_verified','host_total_listings_count','review_scores_rating','price_range','cancellation_policy')]
+
+head(knn.subset)
+#normalization
+Normalize <- function(x){
+  return((x - min(x))/(max(x)-min(x))) }
+knn.subset.n<-as.data.frame(lapply(knn.subset[,2:6],Normalize))
+head(knn.subset.n)
+set.seed(123)
+index = sample(1:nrow(knn.subset.n), size = nrow(knn.subset.n)*0.6,replace = FALSE)
+
+# Create training and test set
+datatrain = knn.subset.n[ index, ]
+datatest = knn.subset.n[ -index, ]
+
+train.ylabel<-knn.subset.n[index,1]
+test.ylabel<-knn.subset.n[-index,1]
+
+index1 = sample(1:nrow(datatest), size = nrow(datatest)*0.999,replace = FALSE)
+test1 = datatest[index1,]
+test.ylabel1<-datatest[index1,1]
+
+#index2 = sample( 1:nrow(datatest), size = nrow(datatest)*0.5,replace = FALSE)
+test2 = datatest[-index1,]
+test.ylabel2<-datatest[-index1,1]
+
+#knn.pred<-knn(train=datatrain,test=datatest,cl=train.ylabel,k=3)
+# k = 20,19,18,17,16,15,14,13,12,11,10, accuracy = .986
+#k = 9,8,7, accuracy = .99
+# k =6,5,4 , accuracy = .995
+# k = 3,2,1, acuracy = 1
+#table(knn.pred,test.ylabel)#Initial test data
+#confusionMatrix(table(knn.pred,test.ylabel))
+#plot(knn.pred)
+
+# test data 1
+knn.pred1<-knn(train=datatrain,test=test1,cl=train.ylabel,k=3) 
+confusionMatrix(table(knn.pred1,test.ylabel1))
+plot(knn.pred1)
+summary(knn.pred1)
+
+# test data 2
+knn.pred2<-knn(train=test1,test=test2,cl=test.ylabel1,k=3)
+#table(knn.pred2,test.ylabel2)
+confusionMatrix(table(knn.pred2,test.ylabel2))
+plot(knn.pred2)
+summary(knn.pred2)
+```
+
+### Most preferred price range by airbnb users
+```{r}
+library(class)
+knn <- read.csv("/Users/shivani/Documents/Data Warehousing/Project/Final Project/dataset/KNN/knn.csv")
+
+knn.subset<-knn[c('price_range','zipcode','neighbourhood','smart_location','property_type','room_type','accommodates','bathrooms','bedrooms','beds','reviews_per_month','cleaning_fee','monthly_price','weekly_price')]
+
+head(knn.subset)
+#normalization
+Normalize <- function(x){
+  return((x - min(x))/(max(x)-min(x))) }
+knn.subset.n<-as.data.frame(lapply(knn.subset[,2:14],Normalize))
+head(knn.subset.n)
+set.seed(123)
+index = sample( 1:nrow( knn.subset.n), size = nrow(knn.subset.n)*0.6,replace = FALSE)
+
+# Create training and test set
+datatrain = knn.subset[ index, ]
+datatest = knn.subset[ -index, ]
+
+train.ylabel<-knn.subset[index,1]
+test.ylabel<-knn.subset[-index,1]
+
+NROW(train.ylabel)
+
+#knn.pred<-knn(train=datatrain,test=datatest,cl=train.ylabel,k=10)
+# k = 18, accuracy = .787
+# k = 19, accuracy = .792
+# k = 18, accuracy = .794
+#k = 17, accuracy = .797
+# k = 16 , accuracy = .794
+# k = 15, acuracy = .802
+# k = 14, acuracy = .789
+# k = 13, acuracy = .802
+# k = 12, acuracy = .799
+# k = 11, acuracy = .802
+# k = 10, acuracy = .803
+# k = 9, acuracy = .803
+# k = 8, acuracy = .803
+# k = 7, acuracy = .805
+# k = 6, acuracy = .798
+# k = 5, acuracy = .799
+# k = 4, acuracy = .79
+# k = 3, acuracy = .791
+# k = 2, acuracy = .774
+# k = 1, acuracy = .775
+
+index1 = sample(1:nrow(datatest), size = nrow(datatest)*0.9,replace = FALSE)
+test1 = datatest[index1,]
+test.ylabel1<-datatest[index1,1]
+
+#index2 = sample( 1:nrow(datatest), size = nrow(datatest)*0.5,replace = FALSE)
+test2 = datatest[-index1,]
+test.ylabel2<-datatest[-index1,1]
+
+#knn.pred<-knn(train=datatrain,test=datatest,cl=train.ylabel,k=3)
+# k = 20,19,18,17,16,15,14,13,12,11,10, accuracy = .986
+#k = 9,8,7, accuracy = .99
+# k =6,5,4 , accuracy = .995
+# k = 3,2,1, acuracy = 1
+#table(knn.pred,test.ylabel)#Initial test data
+#confusionMatrix(table(knn.pred,test.ylabel))
+#plot(knn.pred)
+
+# test data 1
+knn.pred1<-knn(train=datatrain,test=test1,cl=train.ylabel,k=3)
+#table(knn.pred2,test.ylabel2)
+confusionMatrix(table(knn.pred1,test.ylabel1))
+plot(knn.pred1)
+summary(knn.pred1)
+
+# test data 2
+knn.pred2<-knn(train=test1,test=test2,cl=test.ylabel1,k=3) 
+confusionMatrix(table(knn.pred2,test.ylabel2))
+plot(knn.pred2)
+summary(knn.pred2)
+
+```
+
+### Most opted room type by airbnb users
+```{r}
+library(class)
+knn <- read.csv("/Users/shivani/Documents/Data Warehousing/Project/Final Project/dataset/KNN/knn.csv")
+
+
+knn.subset<-knn[c('room_type','price_range','number_of_reviews','neighbourhood')]
+head(knn.subset)
+str(knn.subset)
+#normalization
+Normalize <- function(x){
+  return((x - min(x))/(max(x)-min(x))) }
+knn.subset.n<-as.data.frame(lapply(knn.subset[,2:4],Normalize))
+head(knn.subset.n)
+set.seed(123)
+index = sample( 1:nrow( knn.subset.n), size = nrow(knn.subset.n)*0.6,replace = FALSE)
+
+# Create training and test set
+datatrain = knn.subset[ index, ]
+datatest = knn.subset[ -index, ]
+
+train.ylabel<-knn.subset[index,1]
+test.ylabel<-knn.subset[-index,1]
+
+NROW(train.ylabel)
+
+
+knn.pred <- knn(train=datatrain,test=datatest,cl=train.ylabel,k=1)
+# k = 20, accuracy = .694
+# k = 19, accuracy = .694
+# k = 18, accuracy = .698
+#k = 17, accuracy = .701
+# k = 16 , accuracy = .711
+# k = 15, acuracy = .72
+# k = 14, acuracy = .723
+# k = 13, acuracy = .73
+# k = 12, acuracy = .734
+# k = 11, acuracy = .734
+# k = 10, acuracy = .725
+# k = 9, acuracy = .737
+# k = 8, acuracy = .737
+# k = 7, acuracy = .738
+# k = 6, acuracy = .744
+# k = 5, acuracy = .763
+# k = 4, acuracy = .75
+# k = 3, acuracy = .779
+# k = 2, acuracy = .775
+# k = 1, acuracy = .834
+
+index1 = sample(1:nrow(datatest), size = nrow(datatest)*0.9,replace = FALSE)
+test1 = datatest[index1,]
+test.ylabel1<-datatest[index1,1]
+
+#index2 = sample( 1:nrow(datatest), size = nrow(datatest)*0.5,replace = FALSE)
+test2 = datatest[-index1,]
+test.ylabel2<-datatest[-index1,1]
+
+#knn.pred<-knn(train=datatrain,test=datatest,cl=train.ylabel,k=3)
+# k = 20,19,18,17,16,15,14,13,12,11,10, accuracy = .986
+#k = 9,8,7, accuracy = .99
+# k =6,5,4 , accuracy = .995
+# k = 3,2,1, acuracy = 1
+#table(knn.pred,test.ylabel)#Initial test data
+#confusionMatrix(table(knn.pred,test.ylabel))
+#plot(knn.pred)
+
+# test data 1
+knn.pred1<-knn(train=datatrain,test=test1,cl=train.ylabel,k=3) 
+confusionMatrix(table(knn.pred1,test.ylabel1))
+plot(knn.pred1)
+summary(knn.pred1)
+
+# test data 2
+knn.pred2<-knn(train=test1,test=test2,cl=test.ylabel1,k=3)
+#table(knn.pred2,test.ylabel2)
+confusionMatrix(table(knn.pred2,test.ylabel2))
+plot(knn.pred2)
+summary(knn.pred2)
+```
+
+### Most popular property type booked by airbnb users
+```{r}
+library(class)
+knn <- read.csv("/Users/shivani/Documents/Data Warehousing/Project/Final Project/dataset/KNN/knn.csv")
+
+knn$property_type <- as.factor(knn$property_type)
+
+#price_range + room_type  + number_of_reviews + smart_location + host_is_superhost + neighbourhood
+
+knn.subset<-knn[c('property_type','price_range','room_type','number_of_reviews','smart_location','host_is_superhost','neighbourhood')]
+
+#normalization
+Normalize <- function(x){
+  return((x - min(x))/(max(x)-min(x))) }
+knn.subset.n<-as.data.frame(lapply(knn.subset[,2:7],Normalize))
+head(knn.subset.n)
+set.seed(123)
+index = sample( 1:nrow( knn.subset.n), size = nrow(knn.subset.n)*0.6,replace = FALSE)
+
+# Create training and test set
+datatrain = knn.subset[ index, ]
+datatest = knn.subset[ -index, ]
+
+train.ylabel<-knn.subset[index,1]
+test.ylabel<-knn.subset[-index,1]
+
+NROW(train.ylabel)
+
+#knn.pred <- knn(train=datatrain,test=datatest,cl=train.ylabel,k=5)
+# k = 20, accuracy = .694
+# k = 19, accuracy = .694
+# k = 18, accuracy = .698
+# k = 17, accuracy = .701
+# k = 16 , accuracy = .711
+# k = 15, acuracy = .72
+# k = 14, acuracy = .723
+# k = 13, acuracy = .73
+# k = 12, acuracy = .734
+# k = 11, acuracy = .734
+# k = 10, acuracy = .725
+# k = 9, acuracy = .737
+# k = 8, acuracy = .737
+# k = 7, acuracy = .738
+# k = 6, acuracy = .744
+# k = 5, acuracy = .763
+# k = 4, acuracy = .75
+# k = 3, acuracy = .779
+# k = 2, acuracy = .775
+# k = 1, acuracy = .834
+
+index1 = sample(1:nrow(datatest), size = nrow(datatest)*0.9,replace = FALSE)
+test1 = datatest[index1,]
+test.ylabel1<-datatest[index1,1]
+
+#index2 = sample( 1:nrow(datatest), size = nrow(datatest)*0.5,replace = FALSE)
+test2 = datatest[-index1,]
+test.ylabel2<-datatest[-index1,1]
+
+#knn.pred<-knn(train=datatrain,test=datatest,cl=train.ylabel,k=3)
+# k = 20,19,18,17,16,15,14,13,12,11,10, accuracy = .986
+#k = 9,8,7, accuracy = .99
+# k =6,5,4 , accuracy = .995
+# k = 3,2,1, acuracy = 1
+#table(knn.pred,test.ylabel)#Initial test data
+#confusionMatrix(table(knn.pred,test.ylabel))
+#plot(knn.pred)
+
+# test data 1
+knn.pred1<-knn(train=datatrain,test=test1,cl=train.ylabel,k=3) 
+confusionMatrix(table(knn.pred1,test.ylabel1))
+plot(knn.pred1)
+summary(knn.pred1)
+
+# test data 2
+knn.pred2<-knn(train=test1,test=test2,cl=test.ylabel1,k=3)
+#table(knn.pred2,test.ylabel2)
+confusionMatrix(table(knn.pred2,test.ylabel2))
+plot(knn.pred2)
+summary(knn.pred2)
+```
+
+### Most visited season by airbnb users in the four states
+```{r}
+library(class)
+knn <- read.csv("/Users/shivani/Documents/Data Warehousing/Project/Final Project/dataset/KNN/knn.csv")
+
+knn.subset<-knn[c('Seasons','price_range','property_type','number_of_reviews','neighbourhood')]
+
+#normalization
+Normalize <- function(x){
+  return((x - min(x))/(max(x)-min(x))) }
+knn.subset.n<-as.data.frame(lapply(knn.subset[,2:5],Normalize))
+head(knn.subset.n)
+set.seed(123)
+index = sample( 1:nrow( knn.subset.n), size = nrow(knn.subset.n)*0.6,replace = FALSE)
+
+# Create training and test set
+datatrain = knn.subset[ index, ]
+datatest = knn.subset[ -index, ]
+
+train.ylabel<-knn.subset[index,1]
+test.ylabel<-knn.subset[-index,1]
+
+NROW(train.ylabel)
+
+
+#knn.pred <- knn(train=datatrain,test=datatest,cl=train.ylabel,k=1)
+# k = 20, accuracy = .6437
+# k = 19, accuracy = .6497
+# k = 18, accuracy = .6504
+# k = 17, accuracy = .6519
+# k = 16 , accuracy = .6572
+# k = 15, acuracy = .6542
+# k = 14, acuracy = .6662
+# k = 13, acuracy = .6587
+# k = 12, acuracy = .6654
+# k = 11, acuracy = .6602
+# k = 10, acuracy = .6647
+# k = 9, acuracy = .6752
+# k = 8, acuracy = .6752
+# k = 7, acuracy = .6774
+# k = 6, acuracy = .6827
+# k = 5, acuracy = .6744
+# k = 4, acuracy = .6917
+# k = 3, acuracy = .6894
+# k = 2, acuracy = .6879
+# k = 1, acuracy = .7229
+
+index1 = sample(1:nrow(datatest), size = nrow(datatest)*0.9,replace = FALSE)
+test1 = datatest[index1,]
+test.ylabel1<-datatest[index1,1]
+
+#index2 = sample( 1:nrow(datatest), size = nrow(datatest)*0.5,replace = FALSE)
+test2 = datatest[-index1,]
+test.ylabel2<-datatest[-index1,1]
+
+#knn.pred<-knn(train=datatrain,test=datatest,cl=train.ylabel,k=3)
+# k = 20,19,18,17,16,15,14,13,12,11,10, accuracy = .986
+#k = 9,8,7, accuracy = .99
+# k =6,5,4 , accuracy = .995
+# k = 3,2,1, acuracy = 1
+#table(knn.pred,test.ylabel)#Initial test data
+#confusionMatrix(table(knn.pred,test.ylabel))
+#plot(knn.pred)
+
+# test data 1
+knn.pred1<-knn(train=datatrain,test=test1,cl=train.ylabel,k=3) 
+confusionMatrix(table(knn.pred1,test.ylabel1))
+plot(knn.pred1)
+summary(knn.pred1)
+
+# test data 2
+knn.pred2<-knn(train=test1,test=test2,cl=test.ylabel1,k=3)
+#table(knn.pred2,test.ylabel2)
+confusionMatrix(table(knn.pred2,test.ylabel2))
+plot(knn.pred2)
+summary(knn.pred2)
+```
